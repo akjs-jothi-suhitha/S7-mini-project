@@ -1,6 +1,6 @@
 """
 AI-Driven Resume Screening and Skill Validation System.
-Interactive Recruiter Dashboard Application.
+Interactive Recruiter Dashboard Application - Light & White Theme.
 """
 
 import os
@@ -23,148 +23,193 @@ from modules.document_processing.file_validator import ValidationError
 from config import SCORING_WEIGHTS, DATABASE_PATH
 import database
 
-# Page Configuration - Completely collapse/hide sidebar
+# Page Configuration - Standard expanded sidebar
 st.set_page_config(
     page_title="AI Resume Screening & Skill Validation",
     page_icon="🎯",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
-# Custom Styling (Dark & Light mode adaptive, glassmorphism, no jarring white boxes)
+# Custom Styling - High-contrast Light/White Theme with larger readable fonts
 st.markdown(
     """
     <style>
-    /* Completely hide Streamlit sidebar */
-    [data-testid="stSidebar"], section[data-testid="stSidebar"] {
-        display: none !important;
-    }
-    
-    /* Hero Title & Subtitles */
-    .hero-container {
-        padding: 1.2rem 1.5rem;
-        background: linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
-        border: 1px solid rgba(59, 130, 246, 0.25);
-        border-radius: 12px;
-        margin-bottom: 1.2rem;
-    }
-    .main-header {
-        font-size: 2.1rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #38BDF8, #818CF8, #C084FC);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.3rem;
-    }
-    .sub-header {
-        font-size: 1.0rem;
-        color: #94A3B8;
-        margin-bottom: 0.5rem;
-        font-weight: 400;
+    /* Force Crisp White App Background */
+    .stApp {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        font-size: 1.12rem !important;
     }
 
-    /* Metric Cards - Sleek translucent styling that fits dark & light themes */
-    .metric-card {
-        background: rgba(30, 41, 59, 0.7);
-        border-radius: 10px;
-        padding: 16px 20px;
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        text-align: center;
-        transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-    .metric-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(99, 102, 241, 0.5);
-    }
-    .metric-val {
-        font-size: 2.0rem;
-        font-weight: 800;
-        color: #38BDF8;
-        line-height: 1.2;
-    }
-    .metric-label {
-        font-size: 0.82rem;
-        color: #94A3B8;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-top: 4px;
-        font-weight: 600;
+    /* Main Container Padding */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 3.5rem !important;
+        max-width: 95% !important;
     }
 
-    /* Badges */
+    /* Large Header & Subtitle */
+    .hero-banner {
+        background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
+        border: 2px solid #DBEAFE;
+        border-radius: 14px;
+        padding: 24px 30px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.06);
+    }
+    .hero-title {
+        font-size: 2.5rem !important;
+        font-weight: 800 !important;
+        color: #1E3A8A !important;
+        line-height: 1.25 !important;
+        margin-bottom: 8px !important;
+    }
+    .hero-subtitle {
+        font-size: 1.25rem !important;
+        color: #475569 !important;
+        font-weight: 500 !important;
+        margin-bottom: 0px !important;
+    }
+
+    /* Section Headings */
+    .section-header {
+        font-size: 1.7rem !important;
+        font-weight: 750 !important;
+        color: #0F172A !important;
+        margin-top: 1.8rem !important;
+        margin-bottom: 1.0rem !important;
+        padding-bottom: 6px !important;
+        border-bottom: 2px solid #E2E8F0 !important;
+    }
+
+    /* KPI Stat Cards (White Background with Crisp Borders & Shadows) */
+    .kpi-card {
+        background-color: #FFFFFF !important;
+        border: 2px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        padding: 20px 16px !important;
+        text-align: center !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12) !important;
+        border-color: #93C5FD !important;
+    }
+    .kpi-value {
+        font-size: 2.7rem !important;
+        font-weight: 850 !important;
+        color: #1D4ED8 !important;
+        line-height: 1.1 !important;
+    }
+    .kpi-label {
+        font-size: 1.0rem !important;
+        font-weight: 650 !important;
+        color: #64748B !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        margin-top: 8px !important;
+    }
+
+    /* Status Badges - Large and Vibrant */
     .badge-high {
-        background-color: rgba(34, 197, 94, 0.2);
-        color: #4ADE80;
-        padding: 5px 12px;
-        border-radius: 9999px;
-        font-weight: 700;
-        border: 1px solid rgba(34, 197, 94, 0.4);
-        font-size: 0.85rem;
+        background-color: #DCFCE7 !important;
+        color: #15803D !important;
+        padding: 6px 16px !important;
+        border-radius: 9999px !important;
+        font-weight: 750 !important;
+        font-size: 1.05rem !important;
+        border: 1px solid #86EFAC !important;
         display: inline-block;
     }
     .badge-rel {
-        background-color: rgba(59, 130, 246, 0.2);
-        color: #60A5FA;
-        padding: 5px 12px;
-        border-radius: 9999px;
-        font-weight: 700;
-        border: 1px solid rgba(59, 130, 246, 0.4);
-        font-size: 0.85rem;
+        background-color: #DBEAFE !important;
+        color: #1D4ED8 !important;
+        padding: 6px 16px !important;
+        border-radius: 9999px !important;
+        font-weight: 750 !important;
+        font-size: 1.05rem !important;
+        border: 1px solid #93C5FD !important;
         display: inline-block;
     }
     .badge-mod {
-        background-color: rgba(245, 158, 11, 0.2);
-        color: #FBBF24;
-        padding: 5px 12px;
-        border-radius: 9999px;
-        font-weight: 700;
-        border: 1px solid rgba(245, 158, 11, 0.4);
-        font-size: 0.85rem;
+        background-color: #FEF3C7 !important;
+        color: #B45309 !important;
+        padding: 6px 16px !important;
+        border-radius: 9999px !important;
+        font-weight: 750 !important;
+        font-size: 1.05rem !important;
+        border: 1px solid #FDE68A !important;
         display: inline-block;
     }
     .badge-low {
-        background-color: rgba(239, 68, 68, 0.2);
-        color: #F87171;
-        padding: 5px 12px;
-        border-radius: 9999px;
-        font-weight: 700;
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        font-size: 0.85rem;
+        background-color: #FEE2E2 !important;
+        color: #B91C1C !important;
+        padding: 6px 16px !important;
+        border-radius: 9999px !important;
+        font-weight: 750 !important;
+        font-size: 1.05rem !important;
+        border: 1px solid #FCA5A5 !important;
         display: inline-block;
     }
 
-    /* Skill tags */
+    /* Skill Tags */
     .skill-tag {
         display: inline-block;
-        background: rgba(59, 130, 246, 0.15);
-        color: #93C5FD;
-        padding: 4px 10px;
-        border-radius: 6px;
-        margin: 3px;
-        font-size: 0.84rem;
-        font-weight: 500;
-        border: 1px solid rgba(96, 165, 250, 0.3);
+        background-color: #EFF6FF !important;
+        color: #1E40AF !important;
+        padding: 6px 14px !important;
+        border-radius: 8px !important;
+        margin: 4px !important;
+        font-size: 1.02rem !important;
+        font-weight: 600 !important;
+        border: 1px solid #BFDBFE !important;
     }
     .missing-tag {
         display: inline-block;
-        background: rgba(239, 68, 68, 0.15);
-        color: #FCA5A5;
-        padding: 4px 10px;
-        border-radius: 6px;
-        margin: 3px;
-        font-size: 0.84rem;
-        font-weight: 500;
-        border: 1px solid rgba(248, 113, 113, 0.3);
+        background-color: #FEF2F2 !important;
+        color: #991B1B !important;
+        padding: 6px 14px !important;
+        border-radius: 8px !important;
+        margin: 4px !important;
+        font-size: 1.02rem !important;
+        font-weight: 600 !important;
+        border: 1px solid #FECACA !important;
     }
 
-    /* Info card */
-    .info-panel {
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid rgba(148, 163, 184, 0.15);
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 1rem;
+    /* Candidate Detail Card */
+    .profile-card {
+        background-color: #FFFFFF !important;
+        border: 2px solid #E2E8F0 !important;
+        border-radius: 14px !important;
+        padding: 24px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: #F8FAFC !important;
+        border-right: 2px solid #E2E8F0 !important;
+    }
+    .sidebar-title {
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
+        color: #1E3A8A !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Increase Streamlit General Font Sizes */
+    p, span, label, .stMarkdown, .stSelectbox, .stCheckbox {
+        font-size: 1.1rem !important;
+    }
+    button[kind="primary"] {
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        padding: 12px 28px !important;
+        border-radius: 10px !important;
     }
     </style>
     """,
@@ -203,35 +248,43 @@ def load_sample_data():
     return job_input, resumes, filenames, job_fname
 
 
-def render_top_bar():
-    """Renders the top banner and action bar without any sidebar."""
-    st.markdown(
-        """
-        <div class="hero-container">
-            <div class="main-header">🎯 AI-Driven Resume Screening & Skill Validation System</div>
-            <div class="sub-header">Fair, Explainable, Semantic Candidate Matching with Contextual Evidence Validation</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+def render_sidebar():
+    """Renders the recruiter sidebar with controls, weights, and shortcuts."""
+    st.sidebar.markdown('<div class="sidebar-title">🏢 Recruiter Portal</div>', unsafe_allow_html=True)
+    st.sidebar.caption("Intelligent Candidate Screening & Skill Validation")
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### ⚡ Quick Actions")
+    load_demo = st.sidebar.button(
+        "🚀 Load Demo Dataset",
+        use_container_width=True,
+        type="primary",
+        help="Loads Senior ML Engineer position and 3 candidates (Alex Turner, Priya Sharma, John Doe)",
     )
 
-    col_btn1, col_btn2, col_info = st.columns([1.3, 1.3, 3.4])
+    reset_btn = st.sidebar.button(
+        "🔄 Clear / Reset Dashboard",
+        use_container_width=True,
+        help="Clears active job and screening results",
+    )
 
-    with col_btn1:
-        load_demo = st.button("🚀 Load Demo Dataset", type="primary", use_container_width=True, help="Loads Senior ML Engineer job and 3 pre-configured resumes (Alex Turner, Priya Sharma, John Doe)")
-    
-    with col_btn2:
-        reset_btn = st.button("🔄 Reset / Clear All", use_container_width=True, help="Clears current screening session results")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📊 5-Pillar Scoring Framework")
+    st.sidebar.markdown(
+        f"""
+        - 🧠 **Semantic Skills:** `{SCORING_WEIGHTS['semantic_skill_match']*100:.0f}%`
+        - 🔬 **Skill Evidence:** `{SCORING_WEIGHTS['skill_evidence']*100:.0f}%`
+        - ⏳ **Experience Tenure:** `{SCORING_WEIGHTS['experience_relevance']*100:.0f}%`
+        - 🎓 **Education Level:** `{SCORING_WEIGHTS['education_relevance']*100:.0f}%`
+        - 🛠️ **Projects & Certs:** `{SCORING_WEIGHTS['projects_certs']*100:.0f}%`
+        """
+    )
 
-    with col_info:
-        with st.expander("⚙️ System Architecture & 5-Pillar Scoring Weights", expanded=False):
-            st.markdown(
-                f"- **Semantic Skill Match:** `{SCORING_WEIGHTS['semantic_skill_match']*100:.0f}%` (Sentence-BERT & Cosine Similarity)\n"
-                f"- **Skill Evidence Validation:** `{SCORING_WEIGHTS['skill_evidence']*100:.0f}%` (Contextual project & work verification)\n"
-                f"- **Experience Relevance:** `{SCORING_WEIGHTS['experience_relevance']*100:.0f}%` (Tenure & domain alignment)\n"
-                f"- **Education Relevance:** `{SCORING_WEIGHTS['education_relevance']*100:.0f}%` (Degree level & domain relevance)\n"
-                f"- **Projects & Certifications:** `{SCORING_WEIGHTS['projects_certs']*100:.0f}%` (Portfolio depth & verified credentials)"
-            )
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🛡️ System Specifications")
+    st.sidebar.caption("• **Semantic Engine:** Sentence-BERT / MiniLM")
+    st.sidebar.caption("• **Document Parsers:** PyMuPDF & python-docx")
+    st.sidebar.caption("• **Persistence:** SQLite Database Active")
 
     return load_demo, reset_btn
 
@@ -246,7 +299,7 @@ def main():
         st.session_state.show_names = False
 
     service = get_screening_service()
-    load_demo, reset_btn = render_top_bar()
+    load_demo, reset_btn = render_sidebar()
 
     if reset_btn:
         st.session_state.screening_results = None
@@ -256,7 +309,7 @@ def main():
     # Handle demo loading
     if load_demo:
         demo_job, demo_resumes, demo_filenames, demo_job_name = load_sample_data()
-        with st.spinner("Processing demo candidates through full screening pipeline..."):
+        with st.spinner("Processing demo candidates through the AI screening pipeline..."):
             results = service.process_screening(
                 job_input=demo_job,
                 resume_files=demo_resumes,
@@ -265,399 +318,390 @@ def main():
                 job_title="Senior Machine Learning Engineer",
             )
             st.session_state.screening_results = results
-            st.success("Demo dataset processed successfully!")
+            st.success("✅ Demo dataset processed! Scroll down to inspect the candidate results.")
 
-    # Tab Layout
-    tab_input, tab_results, tab_analytics, tab_fairness = st.tabs([
-        "📥 1. Input & Screening",
-        "🏆 2. Candidate Ranking & Profiles",
-        "📊 3. Visual Analytics",
-        "⚖️ 4. Fairness & Evaluation Audit",
-    ])
+    # Top Hero Banner
+    st.markdown(
+        """
+        <div class="hero-banner">
+            <div class="hero-title">🎯 AI-Driven Resume Screening & Skill Validation System</div>
+            <div class="hero-subtitle">Fair, Explainable, Semantic Candidate Matching with Contextual Evidence Verification</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # TAB 1: INPUT & SCREENING
-    with tab_input:
-        st.subheader("Step 1: Provide Job Description")
-        col_jd_text, col_jd_file = st.columns([3, 2])
+    # ==========================================
+    # SECTION 1: JOB & RESUME INGESTION
+    # ==========================================
+    st.markdown('<div class="section-header">📥 1. Job Description & Candidate Resumes</div>', unsafe_allow_html=True)
 
-        with col_jd_text:
+    col_jd, col_resumes = st.columns([1, 1], gap="large")
+
+    with col_jd:
+        st.markdown("#### 📋 Step 1: Job Requirements")
+        job_input_mode = st.radio("Choose Input Method:", ["Paste Job Text", "Upload Job Document (PDF/DOCX)"], horizontal=True)
+
+        job_file = None
+        job_text = ""
+
+        if job_input_mode == "Paste Job Text":
             job_text = st.text_area(
-                "Paste Job Description Text",
+                "Job Description Content:",
                 value=st.session_state.job_text_input,
-                height=210,
-                placeholder="Paste the full job requirements, skills, experience, and responsibilities...",
+                height=220,
+                placeholder="Paste the target job description, qualifications, required skills, and responsibilities...",
             )
-
-        with col_jd_file:
+        else:
             job_file = st.file_uploader(
-                "Or Upload Job Description Document",
+                "Upload Job Description File:",
                 type=["pdf", "docx", "txt"],
-                key="jd_file_uploader",
-                help="Upload job description in PDF, DOCX, or TXT format",
+                key="jd_file_uploader_white",
             )
             if job_file:
-                st.caption(f"📄 Selected Job File: `{job_file.name}`")
+                st.caption(f"📄 Selected file: **{job_file.name}**")
 
-        st.markdown("---")
-        st.subheader("Step 2: Upload Candidate Resumes")
+    with col_resumes:
+        st.markdown("#### 📂 Step 2: Candidate Resumes")
         resume_uploads = st.file_uploader(
-            "Upload Resumes (PDF, DOCX, TXT - Multiple Files Allowed)",
+            "Upload Resumes (PDF, DOCX, TXT - Multiple Files Allowed):",
             type=["pdf", "docx", "txt"],
             accept_multiple_files=True,
-            key="resume_uploader",
+            key="resume_uploader_white",
             help="Select one or multiple resumes to screen against the job description",
         )
 
         if resume_uploads:
-            st.info(f"📂 **{len(resume_uploads)} candidate resume(s)** selected for evaluation.")
+            st.info(f"📁 **{len(resume_uploads)} candidate resume(s)** uploaded and ready for evaluation.")
+        else:
+            st.caption("Upload candidate resumes here, or click **'🚀 Load Demo Dataset'** in the sidebar to test instantly.")
 
-        st.markdown("---")
-        process_btn = st.button("🚀 Start Screening & Evaluation Pipeline", type="primary", use_container_width=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    process_btn = st.button("🚀 Run Screening & Evaluation Pipeline", type="primary", use_container_width=True)
 
-        if process_btn:
-            active_job_input = job_file if job_file is not None else job_text
-            job_fname = job_file.name if job_file else "Job_Description.txt"
+    if process_btn:
+        active_job_input = job_file if job_file is not None else job_text
+        job_fname = job_file.name if job_file else "Job_Description.txt"
 
-            if not active_job_input or (isinstance(active_job_input, str) and not active_job_input.strip()):
-                st.error("⚠️ Please provide a Job Description (either paste text or upload a document).")
-            elif not resume_uploads:
-                st.error("⚠️ Please upload at least one candidate resume to screen.")
-            else:
-                try:
-                    with st.spinner("Executing semantic matching, skill evidence validation, and scoring..."):
-                        resumes_data = [r.read() for r in resume_uploads]
-                        resume_fnames = [r.name for r in resume_uploads]
-                        batch_res = service.process_screening(
-                            job_input=active_job_input,
-                            resume_files=resumes_data,
-                            job_filename=job_fname,
-                            resume_filenames=resume_fnames,
-                        )
-                        st.session_state.screening_results = batch_res
-                        st.success(f"Screening complete! Processed and ranked {batch_res.total_candidates} candidate(s).")
-                except ValidationError as ve:
-                    st.error(f"Validation Error: {str(ve)}")
-                except Exception as e:
-                    st.error(f"An error occurred during processing: {str(e)}")
+        if not active_job_input or (isinstance(active_job_input, str) and not active_job_input.strip()):
+            st.error("⚠️ Please provide a Job Description (paste text or upload a document).")
+        elif not resume_uploads:
+            st.error("⚠️ Please upload at least one candidate resume to screen.")
+        else:
+            try:
+                with st.spinner("Executing semantic matching, skill evidence validation, and candidate scoring..."):
+                    resumes_data = [r.read() for r in resume_uploads]
+                    resume_fnames = [r.name for r in resume_uploads]
+                    batch_res = service.process_screening(
+                        job_input=active_job_input,
+                        resume_files=resumes_data,
+                        job_filename=job_fname,
+                        resume_filenames=resume_fnames,
+                    )
+                    st.session_state.screening_results = batch_res
+                    st.success(f"✅ Screening complete for {batch_res.total_candidates} candidate(s)! Scroll down to view the full dashboard.")
+            except ValidationError as ve:
+                st.error(f"Validation Error: {str(ve)}")
+            except Exception as e:
+                st.error(f"Processing Error: {str(e)}")
 
+    # Retrieve current results
     results: BatchScreeningResult = st.session_state.screening_results
     show_names = st.session_state.get("show_names", False)
 
-    # TAB 2: CANDIDATE RANKING & PROFILES
+    # ==========================================
+    # SCROLLING DOWN FOR RESULT: REAL DASHBOARD
+    # ==========================================
     if results and results.ranked_candidates:
-        with tab_results:
-            st.subheader(f"🏆 Candidate Ranking for: {results.job_title}")
+        st.markdown("<br>", unsafe_allow_html=True)
 
-            # Top Summary Metrics (Translucent dark/light adaptive cards)
-            mcol1, mcol2, mcol3, mcol4 = st.columns(4)
-            with mcol1:
-                st.markdown(
-                    f'<div class="metric-card"><div class="metric-val">{results.total_candidates}</div><div class="metric-label">Candidates Evaluated</div></div>',
-                    unsafe_allow_html=True,
-                )
-            with mcol2:
-                top_cand = results.ranked_candidates[0]
-                disp_top = top_cand.candidate_name if show_names else top_cand.anonymized_id
-                st.markdown(
-                    f'<div class="metric-card"><div class="metric-val">{top_cand.overall_score:.1f}%</div><div class="metric-label">Top Score ({disp_top})</div></div>',
-                    unsafe_allow_html=True,
-                )
-            with mcol3:
-                high_count = sum(1 for c in results.ranked_candidates if c.recommendation == "HIGH RELEVANCE")
-                st.markdown(
-                    f'<div class="metric-card"><div class="metric-val">{high_count}</div><div class="metric-label">High Relevance Matches</div></div>',
-                    unsafe_allow_html=True,
-                )
-            with mcol4:
-                avg_score = sum(c.overall_score for c in results.ranked_candidates) / len(results.ranked_candidates)
-                st.markdown(
-                    f'<div class="metric-card"><div class="metric-val">{avg_score:.1f}%</div><div class="metric-label">Average Batch Score</div></div>',
-                    unsafe_allow_html=True,
-                )
+        # ==========================================
+        # SECTION 2: EXECUTIVE KPI SUMMARY (4 CARDS)
+        # ==========================================
+        st.markdown(f'<div class="section-header">📊 2. Executive Overview: {results.job_title}</div>', unsafe_allow_html=True)
 
-            st.markdown("<br>", unsafe_allow_html=True)
-
-            # Interactive Filter Toolbar
-            fcol1, fcol2 = st.columns([2, 2])
-            with fcol1:
-                filter_rec = st.multiselect(
-                    "Filter by Recommendation Tier:",
-                    options=["HIGH RELEVANCE", "RELEVANT", "MODERATE RELEVANCE", "LOW RELEVANCE"],
-                    default=["HIGH RELEVANCE", "RELEVANT", "MODERATE RELEVANCE", "LOW RELEVANCE"],
-                )
-            with fcol2:
-                min_score = st.slider("Minimum Overall Score (%)", min_value=0.0, max_value=100.0, value=0.0, step=5.0)
-
-            filtered_candidates = [
-                c for c in results.ranked_candidates
-                if c.recommendation in filter_rec and c.overall_score >= min_score
-            ]
-
-            # Build leaderboard DataFrame
-            leaderboard_data = []
-            for c in filtered_candidates:
-                cand_label = c.candidate_name if show_names else c.anonymized_id
-                leaderboard_data.append({
-                    "Rank": f"#{c.rank}",
-                    "Candidate ID": c.anonymized_id,
-                    "Candidate": cand_label,
-                    "Overall Match": f"{c.overall_score:.1f}%",
-                    "Semantic Skills": f"{c.score_breakdown.semantic_skill_match_score:.1f}%" if c.score_breakdown else "N/A",
-                    "Evidence Score": f"{c.score_breakdown.skill_evidence_score:.1f}%" if c.score_breakdown else "N/A",
-                    "Experience Score": f"{c.score_breakdown.experience_relevance_score:.1f}%" if c.score_breakdown else "N/A",
-                    "Recommendation": c.recommendation,
-                })
-            df_leaderboard = pd.DataFrame(leaderboard_data)
-            st.dataframe(df_leaderboard, use_container_width=True, hide_index=True)
-
-            st.markdown("---")
-            st.subheader("🔍 Deep-Dive Candidate Profile & Skill Evidence")
-
-            cand_options = [
-                f"Rank #{c.rank} - {c.candidate_name if show_names else c.anonymized_id} (Score: {c.overall_score:.1f}%)"
-                for c in results.ranked_candidates
-            ]
-            selected_idx = st.selectbox(
-                "Select Candidate to Inspect:",
-                range(len(cand_options)),
-                format_func=lambda i: cand_options[i],
+        k1, k2, k3, k4 = st.columns(4, gap="medium")
+        with k1:
+            st.markdown(
+                f'<div class="kpi-card"><div class="kpi-value">{results.total_candidates}</div><div class="kpi-label">Candidates Evaluated</div></div>',
+                unsafe_allow_html=True,
             )
-            cand = results.ranked_candidates[selected_idx]
-            cand_display_label = cand.candidate_name if show_names else cand.anonymized_id
+        with k2:
+            top_candidate = results.ranked_candidates[0]
+            top_display = top_candidate.candidate_name if show_names else top_candidate.anonymized_id
+            st.markdown(
+                f'<div class="kpi-card"><div class="kpi-value">{top_candidate.overall_score:.1f}%</div><div class="kpi-label">Top Score ({top_display})</div></div>',
+                unsafe_allow_html=True,
+            )
+        with k3:
+            high_count = sum(1 for c in results.ranked_candidates if c.recommendation == "HIGH RELEVANCE")
+            st.markdown(
+                f'<div class="kpi-card"><div class="kpi-value">{high_count}</div><div class="kpi-label">High Relevance Matches</div></div>',
+                unsafe_allow_html=True,
+            )
+        with k4:
+            avg_score = sum(c.overall_score for c in results.ranked_candidates) / len(results.ranked_candidates)
+            st.markdown(
+                f'<div class="kpi-card"><div class="kpi-value">{avg_score:.1f}%</div><div class="kpi-label">Average Match Score</div></div>',
+                unsafe_allow_html=True,
+            )
 
-            col_p1, col_p2 = st.columns([1, 2])
+        # ==========================================
+        # SECTION 3: CANDIDATE LEADERBOARD & RANKING
+        # ==========================================
+        st.markdown('<div class="section-header">🏆 3. Candidate Ranking & Leaderboard</div>', unsafe_allow_html=True)
 
-            with col_p1:
-                st.markdown(f"#### 👤 {cand_display_label}")
-                st.caption(f"Candidate Identifier: `{cand.anonymized_id}`")
+        filter_col1, filter_col2 = st.columns([2, 2], gap="large")
+        with filter_col1:
+            rec_filters = st.multiselect(
+                "Filter by Recommendation Tier:",
+                options=["HIGH RELEVANCE", "RELEVANT", "MODERATE RELEVANCE", "LOW RELEVANCE"],
+                default=["HIGH RELEVANCE", "RELEVANT", "MODERATE RELEVANCE", "LOW RELEVANCE"],
+            )
+        with filter_col2:
+            score_filter = st.slider("Minimum Match Score (%)", min_value=0.0, max_value=100.0, value=0.0, step=5.0)
 
-                rec_badge_class = {
-                    "HIGH RELEVANCE": "badge-high",
-                    "RELEVANT": "badge-rel",
-                    "MODERATE RELEVANCE": "badge-mod",
-                    "LOW RELEVANCE": "badge-low",
-                }.get(cand.recommendation, "badge-mod")
+        filtered_list = [
+            c for c in results.ranked_candidates
+            if c.recommendation in rec_filters and c.overall_score >= score_filter
+        ]
 
+        leaderboard_rows = []
+        for c in filtered_list:
+            c_name_str = c.candidate_name if show_names else c.anonymized_id
+            leaderboard_rows.append({
+                "Rank": f"#{c.rank}",
+                "Candidate ID": c.anonymized_id,
+                "Candidate Name": c_name_str,
+                "Overall Score": f"{c.overall_score:.1f}%",
+                "Semantic Skills": f"{c.score_breakdown.semantic_skill_match_score:.1f}%" if c.score_breakdown else "N/A",
+                "Skill Evidence": f"{c.score_breakdown.skill_evidence_score:.1f}%" if c.score_breakdown else "N/A",
+                "Experience Score": f"{c.score_breakdown.experience_relevance_score:.1f}%" if c.score_breakdown else "N/A",
+                "Recommendation": c.recommendation,
+            })
+
+        df_leaderboard = pd.DataFrame(leaderboard_rows)
+        st.dataframe(df_leaderboard, use_container_width=True, hide_index=True)
+
+        # ==========================================
+        # SECTION 4: CANDIDATE PROFILE & EVIDENCE DEEP-DIVE
+        # ==========================================
+        st.markdown('<div class="section-header">🔍 4. Candidate Profile & Verified Evidence Deep-Dive</div>', unsafe_allow_html=True)
+
+        candidate_labels = [
+            f"Rank #{c.rank} - {c.candidate_name if show_names else c.anonymized_id} (Score: {c.overall_score:.1f}%)"
+            for c in results.ranked_candidates
+        ]
+        chosen_idx = st.selectbox(
+            "Select Candidate to Inspect:",
+            range(len(candidate_labels)),
+            format_func=lambda i: candidate_labels[i],
+        )
+        selected_cand = results.ranked_candidates[chosen_idx]
+        selected_display_name = selected_cand.candidate_name if show_names else selected_cand.anonymized_id
+
+        detail_left, detail_right = st.columns([1, 2], gap="large")
+
+        with detail_left:
+            st.markdown(f"### 👤 {selected_display_name}")
+            st.caption(f"Candidate ID: `{selected_cand.anonymized_id}`")
+
+            rec_badge_class = {
+                "HIGH RELEVANCE": "badge-high",
+                "RELEVANT": "badge-rel",
+                "MODERATE RELEVANCE": "badge-mod",
+                "LOW RELEVANCE": "badge-low",
+            }.get(selected_cand.recommendation, "badge-mod")
+
+            st.markdown(
+                f'<div style="margin: 12px 0;"><span class="{rec_badge_class}">{selected_cand.recommendation}</span></div>',
+                unsafe_allow_html=True,
+            )
+            st.progress(min(1.0, selected_cand.overall_score / 100.0), text=f"Overall Match: {selected_cand.overall_score:.1f}%")
+
+            if selected_cand.score_breakdown:
+                st.markdown("#### 📊 5-Pillar Score Breakdown")
                 st.markdown(
-                    f'<p>Status: <span class="{rec_badge_class}">{cand.recommendation}</span></p>',
-                    unsafe_allow_html=True,
+                    f"""
+                    - 🧠 **Semantic Skill Match:** `{selected_cand.score_breakdown.semantic_skill_match_score:.1f}%`
+                    - 🔬 **Skill Evidence Validation:** `{selected_cand.score_breakdown.skill_evidence_score:.1f}%`
+                    - ⏳ **Experience Relevance:** `{selected_cand.score_breakdown.experience_relevance_score:.1f}%`
+                    - 🎓 **Education Relevance:** `{selected_cand.score_breakdown.education_relevance_score:.1f}%`
+                    - 🛠️ **Projects & Certs:** `{selected_cand.score_breakdown.projects_certs_score:.1f}%`
+                    """
                 )
-                st.progress(min(1.0, cand.overall_score / 100.0), text=f"Overall Score: {cand.overall_score:.1f}%")
 
-                if cand.score_breakdown:
-                    st.markdown("##### 5-Pillar Score Breakdown")
-                    st.write(f"- 🧠 **Semantic Skill Match:** {cand.score_breakdown.semantic_skill_match_score:.1f}%")
-                    st.write(f"- 🔬 **Skill Evidence Validation:** {cand.score_breakdown.skill_evidence_score:.1f}%")
-                    st.write(f"- ⏳ **Experience Relevance:** {cand.score_breakdown.experience_relevance_score:.1f}%")
-                    st.write(f"- 🎓 **Education Relevance:** {cand.score_breakdown.education_relevance_score:.1f}%")
-                    st.write(f"- 🛠️ **Projects & Certs:** {cand.score_breakdown.projects_certs_score:.1f}%")
+        with detail_right:
+            st.markdown("#### 💡 Explainable AI Rationale")
+            st.info(f"📢 {selected_cand.explanation}")
 
-            with col_p2:
-                st.markdown("#### 💡 Explainable AI Rationale")
-                st.info(cand.explanation)
+            st.markdown("#### 🎯 Skill Alignment Breakdown")
+            col_match, col_miss = st.columns(2)
 
-                st.markdown("#### 🎯 Skill Alignment Breakdown")
-                c_mat, c_miss = st.columns(2)
-
-                with c_mat:
-                    st.markdown("**✅ Matched & Partial Skills**")
-                    all_matched = cand.matched_skills + cand.partial_skills
-                    if all_matched:
-                        for m in all_matched:
-                            sim_pct = f"{m.similarity_score * 100:.0f}%" if m.similarity_score else "100%"
-                            st.markdown(f'<span class="skill-tag">✓ {m.job_skill} ({sim_pct})</span>', unsafe_allow_html=True)
-                    else:
-                        st.write("No matching skills identified.")
-
-                with c_miss:
-                    st.markdown("**❌ Missing Skills**")
-                    if cand.missing_skills:
-                        for m in cand.missing_skills:
-                            st.markdown(f'<span class="missing-tag">✗ {m.job_skill}</span>', unsafe_allow_html=True)
-                    else:
-                        st.write("No major required skills missing.")
-
-                st.markdown("#### 🔬 Verified Skill Evidence (Contextual Validation)")
-                if cand.evidence_items:
-                    ev_data = []
-                    for ev in cand.evidence_items:
-                        ev_data.append({
-                            "Skill": ev.skill_name,
-                            "Evidence Level": f"Level {ev.evidence_level}",
-                            "Confidence": ev.confidence_label,
-                            "Source Section": ev.source_section,
-                            "Contextual Snippet": ev.snippet,
-                        })
-                    st.dataframe(pd.DataFrame(ev_data), use_container_width=True, hide_index=True)
+            with col_match:
+                st.markdown("**✅ Matched & Partial Skills:**")
+                all_matched_skills = selected_cand.matched_skills + selected_cand.partial_skills
+                if all_matched_skills:
+                    for m in all_matched_skills:
+                        sim_pct = f"{m.similarity_score * 100:.0f}%" if m.similarity_score else "100%"
+                        st.markdown(f'<span class="skill-tag">✓ {m.job_skill} ({sim_pct})</span>', unsafe_allow_html=True)
                 else:
-                    st.caption("No contextual evidence records found.")
+                    st.write("No matching skills identified.")
 
-                if cand.relevant_projects:
-                    st.markdown("#### 📁 Key Projects Found")
-                    for p in cand.relevant_projects[:4]:
-                        st.markdown(f"- {p}")
+            with col_miss:
+                st.markdown("**❌ Missing Skills:**")
+                if selected_cand.missing_skills:
+                    for m in selected_cand.missing_skills:
+                        st.markdown(f'<span class="missing-tag">✗ {m.job_skill}</span>', unsafe_allow_html=True)
+                else:
+                    st.write("No major required skills missing.")
 
-        # TAB 3: VISUAL ANALYTICS & CANDIDATE COMPARISON
-        with tab_analytics:
-            st.subheader("📊 Visual Analytics & Candidate Comparison")
-
-            # NAME REVEAL CHECKBOX IN VISUAL ANALYTICS (As requested)
-            an_col1, an_col2 = st.columns([2, 2])
-            with an_col1:
-                reveal_names = st.checkbox(
-                    "👁️ Reveal Candidate Real Names (Toggle from Anonymized IDs to Real Names)",
-                    value=st.session_state.show_names,
-                    key="reveal_names_checkbox_analytics",
-                    help="When checked, real candidate names appear on charts and leaderboards.",
-                )
-                if reveal_names != st.session_state.show_names:
-                    st.session_state.show_names = reveal_names
-                    st.rerun()
-
-            with an_col2:
-                chart_type = st.radio(
-                    "Select Comparison View:",
-                    options=["Overall Match Ranking", "5-Pillar Radar Comparison", "Multi-Factor Stacked Breakdown"],
-                    horizontal=True,
-                )
-
-            current_show_names = st.session_state.show_names
-            c_names = [c.candidate_name if current_show_names else c.anonymized_id for c in results.ranked_candidates]
-            c_scores = [c.overall_score for c in results.ranked_candidates]
-
-            # Chart View 1: Overall Match Ranking
-            if chart_type == "Overall Match Ranking":
-                c_colors = ['#22C55E' if s >= 80 else '#3B82F6' if s >= 65 else '#F59E0B' if s >= 50 else '#EF4444' for s in c_scores]
-                fig_scores = go.Figure(
-                    data=[go.Bar(
-                        x=c_names,
-                        y=c_scores,
-                        marker_color=c_colors,
-                        text=[f"{s:.1f}%" for s in c_scores],
-                        textposition='auto',
-                    )]
-                )
-                fig_scores.update_layout(
-                    title="Overall Candidate Match Scores",
-                    xaxis_title="Candidate",
-                    yaxis_title="Match Score (%)",
-                    yaxis=dict(range=[0, 100]),
-                    template="plotly_dark",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                )
-                st.plotly_chart(fig_scores, use_container_width=True)
-
-            # Chart View 2: Radar Polar Chart for Top Candidates
-            elif chart_type == "5-Pillar Radar Comparison":
-                pillars = ["Semantic Skills", "Skill Evidence", "Experience", "Education", "Projects & Certs"]
-                fig_radar = go.Figure()
-
-                top_n = min(3, len(results.ranked_candidates))
-                colors = ["#38BDF8", "#A855F7", "#F59E0B"]
-
-                for i in range(top_n):
-                    cand_item = results.ranked_candidates[i]
-                    lbl = cand_item.candidate_name if current_show_names else cand_item.anonymized_id
-                    bd = cand_item.score_breakdown
-                    if bd:
-                        vals = [
-                            bd.semantic_skill_match_score,
-                            bd.skill_evidence_score,
-                            bd.experience_relevance_score,
-                            bd.education_relevance_score,
-                            bd.projects_certs_score,
-                        ]
-                        vals.append(vals[0])  # close radar polygon
-                        fig_radar.add_trace(go.Scatterpolar(
-                            r=vals,
-                            theta=pillars + [pillars[0]],
-                            fill='toself',
-                            name=f"#{cand_item.rank} {lbl}",
-                            line_color=colors[i % len(colors)],
-                        ))
-
-                fig_radar.update_layout(
-                    polar=dict(
-                        radialaxis=dict(visible=True, range=[0, 100]),
-                        bgcolor="rgba(0,0,0,0)",
-                    ),
-                    title=f"5-Pillar Competency Radar (Top {top_n} Candidates)",
-                    template="plotly_dark",
-                    paper_bgcolor="rgba(0,0,0,0)",
-                )
-                st.plotly_chart(fig_radar, use_container_width=True)
-
-            # Chart View 3: Multi-Factor Grouped Breakdown
+            st.markdown("#### 🔬 Verified Skill Evidence (Contextual Validation)")
+            if selected_cand.evidence_items:
+                ev_table_rows = []
+                for ev in selected_cand.evidence_items:
+                    ev_table_rows.append({
+                        "Skill": ev.skill_name,
+                        "Evidence Level": f"Level {ev.evidence_level}",
+                        "Confidence": ev.confidence_label,
+                        "Source Section": ev.source_section,
+                        "Contextual Snippet": ev.snippet,
+                    })
+                st.dataframe(pd.DataFrame(ev_table_rows), use_container_width=True, hide_index=True)
             else:
-                breakdown_records = []
-                for c in results.ranked_candidates:
-                    c_lbl = c.candidate_name if current_show_names else c.anonymized_id
-                    if c.score_breakdown:
-                        breakdown_records.append({"Candidate": c_lbl, "Pillar": "Semantic Skills", "Score": c.score_breakdown.semantic_skill_match_score})
-                        breakdown_records.append({"Candidate": c_lbl, "Pillar": "Skill Evidence", "Score": c.score_breakdown.skill_evidence_score})
-                        breakdown_records.append({"Candidate": c_lbl, "Pillar": "Experience", "Score": c.score_breakdown.experience_relevance_score})
-                        breakdown_records.append({"Candidate": c_lbl, "Pillar": "Education", "Score": c.score_breakdown.education_relevance_score})
-                        breakdown_records.append({"Candidate": c_lbl, "Pillar": "Projects & Certs", "Score": c.score_breakdown.projects_certs_score})
+                st.caption("No contextual evidence records found.")
 
-                if breakdown_records:
-                    df_bd = pd.DataFrame(breakdown_records)
-                    fig_bd = px.bar(
-                        df_bd,
-                        x="Candidate",
-                        y="Score",
-                        color="Pillar",
-                        barmode="group",
-                        title="5-Pillar Competency Comparison across Candidates",
-                        template="plotly_dark",
-                        color_discrete_sequence=["#38BDF8", "#818CF8", "#34D399", "#FBBF24", "#F472B6"],
-                    )
-                    fig_bd.update_layout(
-                        yaxis=dict(range=[0, 100]),
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                    )
-                    st.plotly_chart(fig_bd, use_container_width=True)
+            if selected_cand.relevant_projects:
+                st.markdown("#### 📁 Highlighted Projects Found")
+                for p in selected_cand.relevant_projects[:4]:
+                    st.markdown(f"- **{p}**")
 
-        # TAB 4: FAIRNESS & EVALUATION AUDIT
-        with tab_fairness:
-            st.subheader("⚖️ Fairness & Evaluation Audit")
-            st.info(
-                "**Merit-Based Evaluation Policy:** Candidate scoring and ranking are computed strictly on verified "
-                "technical competencies, experience, education, and contextual project evidence."
+        # ==========================================
+        # SECTION 5: VISUAL ANALYTICS (ONLY 4 BARS & NAME REVEAL)
+        # ==========================================
+        st.markdown('<div class="section-header">📊 5. Visual Analytics & Candidate Benchmark</div>', unsafe_allow_html=True)
+
+        va_col1, va_col2 = st.columns([1.5, 1], gap="large")
+
+        with va_col1:
+            # NAME REVEAL CHECKBOX IN VISUAL ANALYTICS
+            reveal_names_checkbox = st.checkbox(
+                "👁️ Reveal Candidate Real Names across Visual Analytics & Leaderboard",
+                value=st.session_state.show_names,
+                key="name_reveal_visual_analytics",
+                help="Check to display real candidate names instead of anonymized IDs.",
             )
+            if reveal_names_checkbox != st.session_state.show_names:
+                st.session_state.show_names = reveal_names_checkbox
+                st.rerun()
 
-            st.markdown("### 📈 Batch Selection & Statistical Parity Metrics")
+        with va_col2:
+            st.caption("Displaying top candidate competencies and comparative visual analytics.")
 
+        # ONLY 4 BARS AVAILABLE AS REQUESTED
+        top_4_candidates = results.ranked_candidates[:4]
+        bar_names = [c.candidate_name if st.session_state.show_names else c.anonymized_id for c in top_4_candidates]
+        bar_scores = [c.overall_score for c in top_4_candidates]
+        bar_colors = ['#16A34A' if s >= 80 else '#2563EB' if s >= 65 else '#D97706' if s >= 50 else '#DC2626' for s in bar_scores]
+
+        st.markdown(f"#### 🏅 Top {len(top_4_candidates)} Ranked Candidates Match Comparison (4-Bar Benchmark)")
+
+        fig_4bars = go.Figure(
+            data=[go.Bar(
+                x=bar_names,
+                y=bar_scores,
+                marker=dict(color=bar_colors, line=dict(color='#1E293B', width=1.5)),
+                text=[f"{s:.1f}%" for s in bar_scores],
+                textposition='auto',
+                textfont=dict(size=16, color='#FFFFFF', family="Arial Black"),
+            )]
+        )
+        fig_4bars.update_layout(
+            title=f"Overall Match Scores (Top {len(top_4_candidates)} Candidates)",
+            xaxis_title="Candidate",
+            yaxis_title="Overall Match Score (%)",
+            yaxis=dict(range=[0, 100], gridcolor='#E2E8F0'),
+            xaxis=dict(gridcolor='#E2E8F0'),
+            template="plotly_white",
+            height=420,
+            font=dict(size=14, color="#0F172A"),
+            paper_bgcolor="#FFFFFF",
+            plot_bgcolor="#FFFFFF",
+        )
+        st.plotly_chart(fig_4bars, use_container_width=True)
+
+        # 5-Pillar Competency Breakdown for the Top Candidates
+        st.markdown(f"#### 🔍 5-Pillar Competency Breakdown (Top {len(top_4_candidates)} Candidates)")
+        pillar_rows = []
+        for c in top_4_candidates:
+            c_label = c.candidate_name if st.session_state.show_names else c.anonymized_id
+            if c.score_breakdown:
+                pillar_rows.append({"Candidate": c_label, "Competency Pillar": "Semantic Skills", "Score": c.score_breakdown.semantic_skill_match_score})
+                pillar_rows.append({"Candidate": c_label, "Competency Pillar": "Skill Evidence", "Score": c.score_breakdown.skill_evidence_score})
+                pillar_rows.append({"Candidate": c_label, "Competency Pillar": "Experience", "Score": c.score_breakdown.experience_relevance_score})
+                pillar_rows.append({"Candidate": c_label, "Competency Pillar": "Education", "Score": c.score_breakdown.education_relevance_score})
+                pillar_rows.append({"Candidate": c_label, "Competency Pillar": "Projects & Certs", "Score": c.score_breakdown.projects_certs_score})
+
+        if pillar_rows:
+            df_pillars = pd.DataFrame(pillar_rows)
+            fig_pillars = px.bar(
+                df_pillars,
+                x="Candidate",
+                y="Score",
+                color="Competency Pillar",
+                barmode="group",
+                title=f"5-Pillar Score Breakdown (Top {len(top_4_candidates)} Candidates)",
+                template="plotly_white",
+                color_discrete_sequence=["#2563EB", "#7C3AED", "#059669", "#D97706", "#DB2777"],
+            )
+            fig_pillars.update_layout(
+                yaxis=dict(range=[0, 100], gridcolor='#E2E8F0'),
+                xaxis=dict(gridcolor='#E2E8F0'),
+                height=420,
+                font=dict(size=14, color="#0F172A"),
+                paper_bgcolor="#FFFFFF",
+                plot_bgcolor="#FFFFFF",
+            )
+            st.plotly_chart(fig_pillars, use_container_width=True)
+
+        # ==========================================
+        # SECTION 6: FAIRNESS & EXPORT
+        # ==========================================
+        st.markdown('<div class="section-header">⚖️ 6. Fairness Audit & Leaderboard Export</div>', unsafe_allow_html=True)
+
+        audit_col1, audit_col2 = st.columns([1.5, 1], gap="large")
+
+        with audit_col1:
+            st.info(
+                "**Merit-Based Assessment Policy:** Candidate evaluation operates strictly on verified technical competencies, "
+                "contextual experience, education, and project achievements."
+            )
             f_metrics = results.fairness_metrics
             fc1, fc2, fc3, fc4 = st.columns(4)
             with fc1:
-                st.metric("Total Candidates Audited", f_metrics.get("total_candidates_audited", 0))
+                st.metric("Total Evaluated", f_metrics.get("total_candidates_audited", 0))
             with fc2:
-                st.metric("Batch Selection Rate", f"{f_metrics.get('selection_rate_pct', 0.0):.1f}%")
+                st.metric("Selection Rate", f"{f_metrics.get('selection_rate_pct', 0.0):.1f}%")
             with fc3:
                 st.metric("Mean Score", f"{f_metrics.get('score_mean', 0.0):.1f}")
             with fc4:
-                st.metric("Demographic Parity Diff", f"{f_metrics.get('demographic_parity_difference', 0.0):.3f}")
+                st.metric("Parity Difference", f"{f_metrics.get('demographic_parity_difference', 0.0):.3f}")
 
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.write(f"**Disparity Status:** `{f_metrics.get('disparity_status', 'Evaluated')}`")
-
-            # Export options
-            st.markdown("---")
-            st.subheader("💾 Export Screening Results")
-            export_df = pd.DataFrame(leaderboard_data)
-            csv_data = export_df.to_csv(index=False).encode("utf-8")
+        with audit_col2:
+            st.markdown("#### 💾 Export Recruiter Report")
+            st.caption("Download the complete evaluated candidate rankings as CSV for offline review or ATS integration.")
+            csv_payload = df_leaderboard.to_csv(index=False).encode("utf-8")
             st.download_button(
                 label="📥 Download Screening Leaderboard as CSV",
-                data=csv_data,
-                file_name="screening_results.csv",
+                data=csv_payload,
+                file_name="candidate_screening_leaderboard.csv",
                 mime="text/csv",
                 type="primary",
+                use_container_width=True,
             )
+
     else:
-        with tab_results:
-            st.info("👋 Upload a job description and resumes in Tab 1, or click '🚀 Load Demo Dataset' in the top action bar to inspect results.")
+        st.info("👋 Upload a job description and resumes above, or click **'🚀 Load Demo Dataset'** in the sidebar to run the screening engine and view results.")
 
 
 if __name__ == "__main__":

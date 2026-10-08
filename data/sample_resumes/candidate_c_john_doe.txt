@@ -1,0 +1,31 @@
+John Doe
+Email: john.doe@emailservice.net | Phone: +1-555-672-9102
+LinkedIn: https://linkedin.com/in/johndoe-webdev | Address: 45 Elm Court, Austin, TX 78701
+DOB: 10/11/1998
+
+PROFESSIONAL SUMMARY
+Junior Web Developer with 1 year of experience building responsive websites and enterprise web interfaces using Java, HTML, CSS, and JavaScript. Seeking new opportunities in software development.
+
+TECHNICAL SKILLS
+- Programming: Java, HTML, CSS, JavaScript
+- Frameworks: Spring Boot, Bootstrap
+- Databases: MySQL
+- Tools: Git, Eclipse, Windows
+
+WORK EXPERIENCE
+Junior Java Developer | Legacy Web Solutions (2023 - Present)
+- Developed responsive web interfaces using HTML, CSS, and JavaScript.
+- Built basic backend CRUD endpoints using Java and Spring Boot connected to MySQL.
+- Maintained legacy website codebases and fixed styling defects across browser versions.
+
+PROJECTS
+- E-Commerce Catalog Website:
+  Created an online storefront product catalog utilizing HTML, CSS, JavaScript, and Java Spring Boot with MySQL database.
+- Student Management Portal:
+  Built a web portal for managing student attendance and grades using Java, HTML, and CSS.
+
+EDUCATION
+Bachelor of Science in Information Systems | City College, 2023
+
+CERTIFICATIONS
+- Oracle Certified Associate, Java SE Programmer

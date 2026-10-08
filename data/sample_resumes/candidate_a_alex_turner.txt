@@ -1,0 +1,40 @@
+Alex Turner
+Email: alex.turner@techmail.io | Phone: +1-555-019-2834
+LinkedIn: https://linkedin.com/in/alexturner-ai | Address: 742 Evergreen Terrace, Seattle, WA 98101
+DOB: 14/08/1995
+
+PROFESSIONAL SUMMARY
+Senior AI Engineer with 4.5 years of industry experience developing production Machine Learning, Deep Learning, and NLP systems. Proven track record deploying transformer-based microservices to AWS cloud infrastructure using Docker and Kubernetes.
+
+TECHNICAL SKILLS
+- Programming: Python, SQL, C++, Bash
+- ML/AI: Machine Learning, Deep Learning, Natural Language Processing, PyTorch, Scikit-learn, TensorFlow, spaCy, Transformers, LLMs
+- Cloud & DevOps: AWS, Docker, Kubernetes, Git, CI/CD, Linux
+- Databases: PostgreSQL, MongoDB, Redis
+- Web & APIs: FastAPI, REST API, Microservices
+
+WORK EXPERIENCE
+Senior Machine Learning Engineer | DataCore AI Labs (2021 - Present)
+- Designed and engineered scalable NLP pipelines processing 1.5M text records daily using Python, PyTorch, and Hugging Face transformers.
+- Implemented deep learning classification and semantic search models using cosine similarity and vector embeddings, improving retrieval accuracy by 28%.
+- Containerized model inference microservices with Docker and deployed them to AWS EKS (Kubernetes) with automated CI/CD pipelines.
+- Reduced inference latency by 40% via model quantization and FastAPI asynchronous endpoints.
+
+AI Developer | CloudSphere Tech (2019 - 2021)
+- Developed machine learning predictive models using Scikit-learn, Pandas, and NumPy for customer churn prediction.
+- Built automated ETL data pipelines querying PostgreSQL databases with optimized SQL queries.
+- Collaborated with engineering teams to deploy RESTful APIs and monitor production model drift.
+
+PROJECTS
+- AI-Driven Semantic Search & Resume Screening System:
+  Developed an automated recruitment screening system using Python, spaCy, and Sentence-BERT transformers. Containerized with Docker and integrated Fairlearn bias mitigation metrics.
+- Multi-Modal NLP Document Analyzer:
+  Built deep learning text parsing application using PyTorch, FastAPI, and PostgreSQL with high-throughput batch inference on AWS.
+
+EDUCATION
+Master of Science in Computer Science (Specialization in AI/ML) | University of Washington, 2019
+Bachelor of Technology in Information Technology | State University, 2017
+
+CERTIFICATIONS
+- AWS Certified Machine Learning - Specialty (2022)
+- Deep Learning Specialization - Coursera / DeepLearning.AI

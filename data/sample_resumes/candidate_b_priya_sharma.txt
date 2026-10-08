@@ -1,0 +1,37 @@
+Priya Sharma
+Email: priya.sharma@domainexample.com | Phone: +1-555-837-4921
+LinkedIn: https://linkedin.com/in/priyasharma-data | Address: 1204 Pine Street, San Jose, CA 95112
+DOB: 22/05/1997
+
+PROFESSIONAL SUMMARY
+Data Scientist with 2.5 years of experience developing machine learning models, statistical analysis workflows, and data pipelines using Python and SQL. Passionate about natural language processing and applied data analytics.
+
+TECHNICAL SKILLS
+- Programming: Python, SQL, R
+- Machine Learning & Data: Machine Learning, Scikit-learn, Pandas, NumPy, Data Analysis, Natural Language Processing, Statistical Analysis
+- Frameworks & Tools: Flask, Git, GitHub, Tableau, Power BI
+- Databases: MySQL, SQLite, PostgreSQL
+
+WORK EXPERIENCE
+Data Scientist | Insight Analytics Corp (2022 - Present)
+- Developed machine learning models using Python and Scikit-learn to forecast sales revenue and customer retention.
+- Created data pipelines and extracted insights using complex SQL queries on PostgreSQL and MySQL databases.
+- Performed text mining and sentiment analysis using Python and NLTK on customer feedback reviews.
+- Built interactive dashboards and data visualizations using Plotly and Tableau for executive decision-making.
+
+Junior Data Analyst | Apex Data Systems (2021 - 2022)
+- Implemented exploratory data analysis and predictive modeling using Pandas, NumPy, and Scikit-learn.
+- Assisted in building lightweight REST APIs with Flask to serve prediction results.
+
+PROJECTS
+- Customer Feedback NLP Classifier:
+  Implemented a text classification project using Python, Scikit-learn, and TF-IDF to categorize 50k customer support tickets.
+- Financial Forecasting Web App:
+  Built a forecasting dashboard in Python and Flask using machine learning regression models and SQLite.
+
+EDUCATION
+Bachelor of Technology in Computer Science | National Institute of Technology, 2021
+
+CERTIFICATIONS
+- Machine Learning Specialization - Coursera
+- Microsoft Certified: Data Analyst Associate

@@ -1,0 +1,26 @@
+Senior Machine Learning Engineer
+
+Company: NextGen AI Solutions
+Location: Remote / Hybrid
+
+About the Role:
+We are seeking an experienced Senior Machine Learning Engineer to design, build, and deploy state-of-the-art NLP and predictive AI solutions. You will work on cutting-edge deep learning models, transformer architectures, and scalable data pipelines.
+
+Requirements & Must-Haves:
+- Strong proficiency in Python and SQL.
+- Deep expertise in Machine Learning, Natural Language Processing (NLP), and Deep Learning.
+- Hands-on experience with PyTorch, Scikit-learn, and Transformers (Hugging Face / spaCy).
+- Experience containerizing and deploying models using Docker and Kubernetes.
+- Familiarity with Cloud platforms (AWS or Azure).
+- Minimum 3+ years of professional experience in machine learning or AI engineering.
+- Bachelor's or Master's degree in Computer Science, Data Science, or related engineering discipline.
+
+Preferred & Good to Have:
+- Experience with FastAPI, Microservices, and REST API development.
+- Knowledge of MLOps, CI/CD pipelines, and Git.
+- Experience with Large Language Models (LLMs) and vector databases.
+
+Key Responsibilities:
+- Design and implement scalable machine learning models and NLP pipelines.
+- Collaborate with software engineers to integrate AI models into production microservices.
+- Optimize inference latency, monitor model performance, and maintain automated retraining workflows.

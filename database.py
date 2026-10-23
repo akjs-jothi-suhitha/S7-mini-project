@@ -271,3 +271,32 @@ def save_fairness_audit(
             (batch_id, metric_name, metric_value, json.dumps(details or {})),
         )
         conn.commit()
+
+
+def delete_candidate(candidate_id: str, db_path: Optional[str] = None) -> bool:
+    """Safely deletes candidate records across all tables."""
+    with db_session(db_path) as conn:
+        conn.execute("DELETE FROM screening_results WHERE candidate_id = ?", (candidate_id,))
+        conn.execute("DELETE FROM candidate_skills WHERE candidate_id = ?", (candidate_id,))
+        conn.execute("DELETE FROM candidate_profiles WHERE candidate_id = ?", (candidate_id,))
+        conn.execute("DELETE FROM candidates WHERE candidate_id = ?", (candidate_id,))
+        conn.commit()
+    logger.info("Deleted candidate records for candidate_id=%s", candidate_id)
+    return True
+
+
+def delete_candidate_by_filename(filename: str, db_path: Optional[str] = None) -> bool:
+    """Safely deletes candidate records matching raw_filename."""
+    with db_session(db_path) as conn:
+        cursor = conn.execute("SELECT candidate_id FROM candidates WHERE raw_filename = ?", (filename,))
+        rows = cursor.fetchall()
+        for row in rows:
+            cid = row["candidate_id"]
+            conn.execute("DELETE FROM screening_results WHERE candidate_id = ?", (cid,))
+            conn.execute("DELETE FROM candidate_skills WHERE candidate_id = ?", (cid,))
+            conn.execute("DELETE FROM candidate_profiles WHERE candidate_id = ?", (cid,))
+            conn.execute("DELETE FROM candidates WHERE candidate_id = ?", (cid,))
+        conn.commit()
+    logger.info("Deleted candidate records for raw_filename=%s", filename)
+    return True
+

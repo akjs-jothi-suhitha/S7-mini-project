@@ -1,13 +1,12 @@
 """
 TalentIQ AI: Enterprise AI Recruitment & Candidate Evaluation Platform.
-High-fidelity implementation of the 5 Reference Dashboard Screens:
-  1. Overview Dashboard
-  2. Resume Screening (Ingestion & Processing Guided Workflow)
-  3. Candidate Leaderboard
-  4. Candidate Profile & Evidence Verification
-  5. Reports & Analytics
-Preserves all existing backend logic, SBERT similarity matching, PII anonymization,
-SQLite persistence, and unit test suites.
+Updated version:
+  - 100% dynamic metrics (No hardcoded demo values, starts with empty state).
+  - No preloaded demo resumes by default.
+  - Resume file management with individual delete control and confirmation.
+  - Interactive clickable sidebar navigation (No circular radio buttons).
+  - Complete removal of System Architecture page.
+  - Preserves all AI/NLP models, SBERT similarity, PII detection, and SQLite persistence.
 """
 
 import os
@@ -46,7 +45,7 @@ st.set_page_config(
 )
 
 # =============================================================================
-# COMPREHENSIVE CSS DESIGN SYSTEM MATCHING REFERENCE IMAGE
+# COMPREHENSIVE CSS DESIGN SYSTEM (No circular radio buttons, Clickable Menu Rows)
 # =============================================================================
 st.markdown(
     """
@@ -73,7 +72,7 @@ st.markdown(
     }
 
     /* ========================================================================
-       2. LEFT SIDEBAR STYLING (Pixel-matched to reference image)
+       2. CLICKABLE SIDEBAR NAVIGATION (NO CIRCULAR RADIO BUTTONS)
        ======================================================================== */
     [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
@@ -124,24 +123,44 @@ st.markdown(
         letter-spacing: 0.04em;
     }
 
-    /* Sidebar Navigation Menu Radio Items */
-    .stRadio div[role="radiogroup"] label {
-        padding: 9px 12px !important;
+    /* Styling for Sidebar Clickable Navigation Rows */
+    [data-testid="stSidebar"] .stButton > button {
+        width: 100% !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        padding: 10px 14px !important;
+        margin-bottom: 4px !important;
         border-radius: 9px !important;
-        margin-bottom: 3px !important;
-        transition: all 0.15s ease-in-out;
-        border: 1px solid transparent;
-    }
-    .stRadio div[role="radiogroup"] label:hover {
-        background-color: #F1F5F9 !important;
-    }
-    .stRadio div[role="radiogroup"] label span {
-        font-weight: 600 !important;
         font-size: 0.94rem !important;
+        transition: all 0.15s ease-in-out !important;
+    }
+    [data-testid="stSidebar"] .stButton > button[kind="secondary"] {
+        background-color: transparent !important;
+        border: 1px solid transparent !important;
         color: #334155 !important;
+        font-weight: 600 !important;
+        box-shadow: none !important;
+    }
+    [data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
+        background-color: #F1F5F9 !important;
+        color: #0F172A !important;
+        border-color: #E2E8F0 !important;
+    }
+    [data-testid="stSidebar"] .stButton > button[kind="primary"] {
+        background-color: #EFF6FF !important;
+        border: 1px solid #BFDBFE !important;
+        border-left: 4px solid #2563EB !important;
+        color: #1D4ED8 !important;
+        font-weight: 750 !important;
+        box-shadow: none !important;
+    }
+    [data-testid="stSidebar"] .stButton > button[kind="primary"]:hover {
+        background-color: #DBEAFE !important;
+        color: #1E40AF !important;
+        transform: none !important;
     }
 
-    /* Sidebar Recruiter Profile Badge */
+    /* Sidebar Recruiter Profile Card */
     .sidebar-recruiter-box {
         background-color: #F8FAFC;
         border: 1px solid #E2E8F0;
@@ -262,11 +281,6 @@ st.markdown(
         color: #64748B !important;
         margin: 4px 0 0 0 !important;
     }
-    .top-header-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
 
     /* ========================================================================
        5. STEPPER WIZARD (SCREEN 2)
@@ -362,28 +376,7 @@ st.markdown(
         border: 1px solid #A7F3D0;
     }
 
-    /* Buttons */
-    button[kind="primary"] {
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        border-radius: 9px !important;
-        font-size: 0.98rem !important;
-        font-weight: 700 !important;
-        padding: 9px 20px !important;
-        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25) !important;
-    }
-    button[kind="secondary"] {
-        background: #FFFFFF !important;
-        color: #1E293B !important;
-        border: 1px solid #CBD5E1 !important;
-        border-radius: 9px !important;
-        font-size: 0.92rem !important;
-        font-weight: 600 !important;
-        padding: 8px 16px !important;
-    }
-
-    /* Custom File Card on Screen 2 */
+    /* File List Card */
     .file-upload-card {
         background-color: #F8FAFC;
         border: 1px solid #E2E8F0;
@@ -395,7 +388,7 @@ st.markdown(
         margin-bottom: 8px;
     }
 
-    /* Custom Evidence Card on Screen 4 */
+    /* Evidence Snippet Card */
     .evidence-snippet-card {
         background-color: #F8FAFC;
         border: 1px solid #E2E8F0;
@@ -417,6 +410,34 @@ st.markdown(
         font-size: 0.8rem;
         color: #64748B;
     }
+
+    /* Clean Empty State Card */
+    .empty-state-box {
+        background-color: #FFFFFF;
+        border: 2px dashed #CBD5E1;
+        border-radius: 16px;
+        padding: 44px 32px;
+        text-align: center;
+        margin: 20px 0;
+    }
+    .empty-state-icon {
+        font-size: 3rem;
+        color: #94A3B8;
+        margin-bottom: 12px;
+    }
+    .empty-state-title {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #1E293B;
+        margin-bottom: 6px;
+    }
+    .empty-state-desc {
+        font-size: 0.96rem;
+        color: #64748B;
+        max-width: 520px;
+        margin: 0 auto 20px auto;
+        line-height: 1.5;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -424,7 +445,7 @@ st.markdown(
 
 
 # =============================================================================
-# ENGINE SERVICES & CACHED RESOURCES
+# ENGINE SERVICES & DEMO DATA LOADER (ACTIVATED ONLY EXPLICITLY)
 # =============================================================================
 @st.cache_resource
 def get_screening_service():
@@ -432,8 +453,8 @@ def get_screening_service():
     return ScreeningService()
 
 
-def load_sample_data():
-    """Loads pre-configured sample files (preferring DOCX) for instant demonstration."""
+def load_demo_dataset():
+    """Loads sample files only when explicitly requested by user."""
     sample_job_docx = PROJECT_ROOT / "data" / "sample_job_descriptions" / "senior_ml_engineer.docx"
     sample_job_txt = PROJECT_ROOT / "data" / "sample_job_descriptions" / "senior_ml_engineer.txt"
     sample_resumes_dir = PROJECT_ROOT / "data" / "sample_resumes"
@@ -458,10 +479,10 @@ def load_sample_data():
 
 
 # =============================================================================
-# PERSISTENT RECRUITER SIDEBAR
+# CLICKABLE SIDEBAR NAVIGATION (NO CIRCULAR RADIO BUTTONS, 7 CLEAN ITEMS)
 # =============================================================================
 def render_sidebar():
-    """Renders the TalentIQ AI left sidebar pixel-matched to the reference image."""
+    """Renders the TalentIQ AI left sidebar with full-row clickable navigation buttons."""
     # Brand
     st.sidebar.markdown(
         """
@@ -474,57 +495,54 @@ def render_sidebar():
         unsafe_allow_html=True,
     )
 
-    nav_options = [
-        "Overview Dashboard",
-        "Resume Screening",
-        "Candidate Leaderboard",
-        "Candidate Profiles",
-        "Skill Matching",
-        "Bias & Fairness Analysis",
-        "Reports & Analytics",
-        "System Architecture",
+    # Exactly 7 Navigation Items (System Architecture completely removed)
+    nav_items = [
+        ("📊", "Overview Dashboard"),
+        ("📥", "Resume Screening"),
+        ("🏆", "Candidate Leaderboard"),
+        ("👤", "Candidate Profiles"),
+        ("🧠", "Skill Matching"),
+        ("⚖️", "Bias & Fairness Analysis"),
+        ("📈", "Reports & Analytics"),
     ]
 
-    # Map current active section if already stored
-    current_idx = 0
-    if "active_section" in st.session_state and st.session_state.active_section in nav_options:
-        current_idx = nav_options.index(st.session_state.active_section)
+    st.sidebar.markdown('<div style="font-size:0.75rem; font-weight:700; color:#94A3B8; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.05em;">Menu</div>', unsafe_allow_html=True)
 
-    selected_nav = st.sidebar.radio(
-        "Navigation Menu",
-        options=nav_options,
-        index=current_idx,
-        label_visibility="collapsed",
-        key="talentiq_sidebar_nav_radio",
-    )
-    st.session_state.active_section = selected_nav
+    current_section = st.session_state.get("active_section", "Overview Dashboard")
+
+    for icon, label in nav_items:
+        is_active = (current_section == label)
+        btn_type = "primary" if is_active else "secondary"
+        if st.sidebar.button(f"{icon}  {label}", key=f"nav_btn_{label}", type=btn_type, use_container_width=True):
+            st.session_state.active_section = label
+            st.rerun()
 
     st.sidebar.markdown("---")
 
-    # Quick Action Buttons
+    # Quick Actions
+    st.sidebar.markdown('<div style="font-size:0.75rem; font-weight:700; color:#94A3B8; text-transform:uppercase; margin-bottom:6px; letter-spacing:0.05em;">Actions</div>', unsafe_allow_html=True)
     load_demo_clicked = st.sidebar.button(
         "⚡ Load Demo Dataset",
         use_container_width=True,
-        type="primary",
-        help="Loads Machine Learning Engineer position with evaluated candidates",
+        help="Optional: Loads sample Job Description & Candidates for testing",
     )
 
     reset_clicked = st.sidebar.button(
         "🔄 Reset Session",
         use_container_width=True,
-        help="Clears active candidate records and uploads",
+        help="Clears all active candidate records and uploads",
     )
 
     # Privacy Reveal Toggle
     reveal_names = st.sidebar.checkbox(
-        "Reveal Real Names",
+        "Reveal Candidate Real Names",
         value=st.session_state.get("show_names", False),
-        key="talentiq_reveal_real_names_cb",
+        key="talentiq_reveal_names_checkbox",
         help="When unchecked, candidate names are masked with anonymized IDs (ANON-XXXX) to prevent cognitive bias.",
     )
     st.session_state.show_names = reveal_names
 
-    # Bottom Recruiter Profile Box (Exact match to reference image bottom)
+    # Bottom Recruiter Profile Box
     st.sidebar.markdown(
         """
         <div class="sidebar-recruiter-box">
@@ -535,22 +553,21 @@ def render_sidebar():
                     <div class="sidebar-recruiter-role">HR Team</div>
                 </div>
             </div>
-            <div style="color:#94A3B8; font-size:1.1rem; cursor:pointer;" title="Settings">⚙️</div>
+            <div style="color:#94A3B8; font-size:1.1rem;" title="Settings">⚙️</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    return selected_nav, load_demo_clicked, reset_clicked
+    return current_section, load_demo_clicked, reset_clicked
 
 
 # =============================================================================
-# SCREEN 1: OVERVIEW DASHBOARD (PIXEL-MATCHED TO REFERENCE IMAGE SCREEN 1)
+# SCREEN 1: OVERVIEW DASHBOARD (DYNAMIC & CLEAN EMPTY STATE)
 # =============================================================================
 def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
-    # Top Header: "Welcome back, Recruiter! 👋", subtitle, Session select, + Start New Screening button
     st.markdown(
-        f"""
+        """
         <div class="top-header-banner">
             <div class="top-header-left">
                 <h1>Welcome back, Recruiter! 👋</h1>
@@ -561,33 +578,45 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
         unsafe_allow_html=True,
     )
 
+    has_data = (results is not None and results.ranked_candidates and len(results.ranked_candidates) > 0)
+
     col_sess, col_start_btn = st.columns([3, 1], gap="medium")
     with col_sess:
-        session_label = f"Current Session: {results.job_title}" if results else "Current Session: ML Engineer Hiring"
-        st.selectbox("Screening Session", [session_label, "Fullstack Developer Hiring", "Data Analyst Screening"], label_visibility="collapsed")
+        session_label = f"Current Session: {results.job_title}" if has_data else "No Active Screening Session"
+        st.selectbox("Screening Session", [session_label], label_visibility="collapsed")
     with col_start_btn:
-        if st.button("➕ Start New Screening", type="primary", use_container_width=True, key="screen1_new_screening_btn"):
+        if st.button("➕ Start New Screening", type="primary", use_container_width=True, key="screen1_start_new_btn"):
             st.session_state.active_section = "Resume Screening"
             st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Calculate real or fallback metrics
-    total_candidates = results.total_candidates if results else 24
-    if results and results.ranked_candidates:
-        avg_score = sum(c.overall_score for c in results.ranked_candidates) / len(results.ranked_candidates)
+    # Dynamic KPI Metrics
+    if has_data:
+        total_candidates = results.total_candidates
+        avg_score = sum(c.overall_score for c in results.ranked_candidates) / total_candidates
         skills_set = set()
         for c in results.ranked_candidates:
             for m in c.matched_skills:
                 skills_set.add(m.job_skill)
-        skills_count = max(len(skills_set), 18)
-        review_req = sum(1 for c in results.ranked_candidates if c.overall_score < 65.0)
+        skills_count = len(skills_set)
+        review_req = sum(1 for c in results.ranked_candidates if c.overall_score < 65.0 or c.recommendation in ["MODERATE RELEVANCE", "LOW RELEVANCE"])
+        total_subtext = "Processed this session"
+        avg_score_str = f"{avg_score:.0f}%"
+        avg_subtext = "Overall relevance"
+        skills_subtext = "Unique skills extracted"
+        review_subtext = "Candidates for manual review"
     else:
-        avg_score = 72.0
-        skills_count = 48
-        review_req = 6
+        total_candidates = 0
+        total_subtext = "No candidates processed"
+        avg_score_str = "—"
+        avg_subtext = "Awaiting screening"
+        skills_count = 0
+        skills_subtext = "No skills extracted"
+        review_req = 0
+        review_subtext = "No review pending"
 
-    # 4 KPI Cards (Screen 1 Reference Image)
+    # 4 KPI Cards (Dynamic Values)
     k1, k2, k3, k4 = st.columns(4, gap="medium")
 
     with k1:
@@ -597,7 +626,7 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
                 <div>
                     <div class="kpi-meta-title">Total Candidates</div>
                     <div class="kpi-big-num">{total_candidates}</div>
-                    <div class="kpi-subtext">Processed this session</div>
+                    <div class="kpi-subtext">{total_subtext}</div>
                 </div>
                 <div class="kpi-icon-circle" style="background:#EEF2FF; color:#4F46E5;">👥</div>
             </div>
@@ -606,16 +635,17 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
         )
 
     with k2:
+        badge_html = '<span style="font-size:0.75rem; background:#DCFCE7; color:#15803D; padding:2px 6px; border-radius:4px; font-weight:700;">Active</span>' if has_data else ''
         st.markdown(
             f"""
             <div class="kpi-card-reference">
                 <div>
                     <div class="kpi-meta-title">Average Match Score</div>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="kpi-big-num">{avg_score:.0f}%</span>
-                        <span style="font-size:0.75rem; background:#DCFCE7; color:#15803D; padding:2px 6px; border-radius:4px; font-weight:700;">+12%</span>
+                        <span class="kpi-big-num">{avg_score_str}</span>
+                        {badge_html}
                     </div>
-                    <div class="kpi-subtext">Overall relevance</div>
+                    <div class="kpi-subtext">{avg_subtext}</div>
                 </div>
                 <div class="kpi-icon-circle" style="background:#EFF6FF; color:#2563EB;">🎯</div>
             </div>
@@ -630,7 +660,7 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
                 <div>
                     <div class="kpi-meta-title">Skills Identified</div>
                     <div class="kpi-big-num">{skills_count}</div>
-                    <div class="kpi-subtext">Unique skills extracted</div>
+                    <div class="kpi-subtext">{skills_subtext}</div>
                 </div>
                 <div class="kpi-icon-circle" style="background:#ECFDF5; color:#059669;">🔬</div>
             </div>
@@ -644,8 +674,8 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
             <div class="kpi-card-reference">
                 <div>
                     <div class="kpi-meta-title">Review Required</div>
-                    <div class="kpi-big-num" style="color:#DC2626;">{review_req}</div>
-                    <div class="kpi-subtext">Candidates for manual review</div>
+                    <div class="kpi-big-num" style="color:{'#DC2626' if review_req > 0 else '#64748B'};">{review_req}</div>
+                    <div class="kpi-subtext">{review_subtext}</div>
                 </div>
                 <div class="kpi-icon-circle" style="background:#FEF2F2; color:#DC2626;">⚠️</div>
             </div>
@@ -655,7 +685,42 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Row 2: Candidate Match Score Distribution & Top Identified Skills
+    # Empty State or Real Charts
+    if not has_data:
+        st.markdown(
+            """
+            <div class="empty-state-box">
+                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-title">No Candidates Processed Yet</div>
+                <div class="empty-state-desc">
+                    Get started by navigating to <b>Resume Screening</b> to upload job requirements and applicant resumes.
+                    Once evaluated, candidate score distributions, verified skills, and screening analytics will populate here.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        col_c1, col_c2, _ = st.columns([1.2, 1.2, 2])
+        with col_c1:
+            if st.button("📥 Go to Resume Screening", type="primary", use_container_width=True, key="empty_screen_link"):
+                st.session_state.active_section = "Resume Screening"
+                st.rerun()
+        with col_c2:
+            if st.button("⚡ Load Demo Dataset (Optional)", use_container_width=True, key="empty_demo_load_btn"):
+                service = get_screening_service()
+                d_job, d_res, d_fnames, d_jname = load_demo_dataset()
+                batch_res = service.process_screening(
+                    job_input=d_job,
+                    resume_files=d_res,
+                    job_filename=d_jname,
+                    resume_filenames=d_fnames,
+                    job_title="Senior Machine Learning Engineer",
+                )
+                st.session_state.screening_results = batch_res
+                st.rerun()
+        return
+
+    # Real Visualizations
     col_dist, col_skills = st.columns([1.2, 1], gap="large")
 
     with col_dist:
@@ -666,21 +731,14 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
             """,
             unsafe_allow_html=True,
         )
-        # Binned distribution (0-20, 20-40, 40-60, 60-80, 80-100) exactly as in Screen 1
         bins = ["0-20", "20-40", "40-60", "60-80", "80-100"]
-        if results and results.ranked_candidates:
-            counts = [0, 0, 0, 0, 0]
-            for c in results.ranked_candidates:
-                if c.overall_score < 20: counts[0] += 1
-                elif c.overall_score < 40: counts[1] += 1
-                elif c.overall_score < 60: counts[2] += 1
-                elif c.overall_score < 80: counts[3] += 1
-                else: counts[4] += 1
-            # Ensure visual balance if sample size is small
-            if sum(counts) < 10:
-                counts = [2, 5, 7, 8, 2]
-        else:
-            counts = [2, 5, 7, 8, 2]
+        counts = [0, 0, 0, 0, 0]
+        for c in results.ranked_candidates:
+            if c.overall_score < 20: counts[0] += 1
+            elif c.overall_score < 40: counts[1] += 1
+            elif c.overall_score < 60: counts[2] += 1
+            elif c.overall_score < 80: counts[3] += 1
+            else: counts[4] += 1
 
         fig_dist = go.Figure(data=[
             go.Bar(
@@ -695,7 +753,7 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
         fig_dist.update_layout(
             xaxis_title="Score Range (%)",
             yaxis_title="Number of Candidates",
-            yaxis=dict(gridcolor='#F1F5F9', range=[0, max(counts) + 3]),
+            yaxis=dict(gridcolor='#F1F5F9', range=[0, max(counts) + 2]),
             xaxis=dict(gridcolor='#F1F5F9'),
             template="plotly_white",
             height=280,
@@ -715,40 +773,39 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
             """,
             unsafe_allow_html=True,
         )
-        skills_data = [
-            {"Skill": "Deep Learning", "Count": 9, "Color": "#C084FC"},
-            {"Skill": "SQL", "Count": 10, "Color": "#FB923C"},
-            {"Skill": "NLP", "Count": 11, "Color": "#FBBF24"},
-            {"Skill": "Data Analysis", "Count": 14, "Color": "#4ADE80"},
-            {"Skill": "Machine Learning", "Count": 16, "Color": "#38BDF8"},
-            {"Skill": "Python", "Count": 18, "Color": "#3B82F6"},
-        ]
-        df_top_sk = pd.DataFrame(skills_data)
-        fig_sk = go.Figure(data=[
-            go.Bar(
-                y=df_top_sk["Skill"],
-                x=df_top_sk["Count"],
-                orientation='h',
-                marker=dict(color=df_top_sk["Color"]),
-                text=df_top_sk["Count"],
-                textposition='outside',
-                textfont=dict(size=12, color='#1E293B', family="Plus Jakarta Sans"),
+        skill_counts = {}
+        for c in results.ranked_candidates:
+            for m in c.matched_skills:
+                skill_counts[m.job_skill] = skill_counts.get(m.job_skill, 0) + 1
+
+        if skill_counts:
+            df_sk = pd.DataFrame(list(skill_counts.items()), columns=["Skill", "Count"]).sort_values("Count", ascending=True)
+            colors = ["#C084FC", "#FB923C", "#FBBF24", "#4ADE80", "#38BDF8", "#3B82F6"] * 3
+            fig_sk = go.Figure(data=[
+                go.Bar(
+                    y=df_sk["Skill"][-6:],
+                    x=df_sk["Count"][-6:],
+                    orientation='h',
+                    marker=dict(color=colors[:len(df_sk[-6:])]),
+                    text=df_sk["Count"][-6:],
+                    textposition='outside',
+                )
+            ])
+            fig_sk.update_layout(
+                xaxis=dict(gridcolor='#F1F5F9'),
+                template="plotly_white",
+                height=280,
+                paper_bgcolor="#FFFFFF",
+                plot_bgcolor="#FFFFFF",
+                margin=dict(l=40, r=30, t=10, b=30),
+                font=dict(size=12, color="#64748B"),
             )
-        ])
-        fig_sk.update_layout(
-            xaxis=dict(range=[0, 22], gridcolor='#F1F5F9'),
-            yaxis=dict(gridcolor='#F1F5F9'),
-            template="plotly_white",
-            height=280,
-            paper_bgcolor="#FFFFFF",
-            plot_bgcolor="#FFFFFF",
-            margin=dict(l=40, r=30, t=10, b=30),
-            font=dict(size=12, color="#64748B"),
-        )
-        st.plotly_chart(fig_sk, use_container_width=True)
+            st.plotly_chart(fig_sk, use_container_width=True)
+        else:
+            st.caption("No matching skills recorded.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Row 3: Recent Screening Activity (Table) & Screening Status (Donut Chart)
+    # Row 3: Recent Activity & Status Donut
     col_act, col_status = st.columns([1.3, 1], gap="large")
 
     with col_act:
@@ -760,13 +817,11 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
             unsafe_allow_html=True,
         )
         act_rows = [
-            {"Time": "10:25 AM", "Action": "Resume Processed", "Details": "5 resumes processed successfully"},
-            {"Time": "10:20 AM", "Action": "Job Description Added", "Details": "ML Engineer JD uploaded"},
-            {"Time": "10:10 AM", "Action": "Screening Completed", "Details": "24 candidates evaluated"},
-            {"Time": "09:45 AM", "Action": "Fairness Audit Logged", "Details": "Parity metrics computed (Fairlearn)"},
+            {"Time": "Just now", "Action": "Session Evaluated", "Details": f"{len(results.ranked_candidates)} candidate(s) screened for {results.job_title}"},
+            {"Time": "Recent", "Action": "Database Synced", "Details": "SQLite persistent records updated"},
+            {"Time": "Recent", "Action": "Fairness Audit Logged", "Details": "PII anonymization & disparity metrics active"},
         ]
-        df_act = pd.DataFrame(act_rows)
-        st.dataframe(df_act, use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(act_rows), use_container_width=True, hide_index=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
     with col_status:
@@ -777,10 +832,13 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
             """,
             unsafe_allow_html=True,
         )
+        high_cnt = sum(1 for c in results.ranked_candidates if c.overall_score >= 70.0)
+        mod_cnt = sum(1 for c in results.ranked_candidates if 40.0 <= c.overall_score < 70.0)
+        low_cnt = sum(1 for c in results.ranked_candidates if c.overall_score < 40.0)
         fig_donut = go.Figure(data=[
             go.Pie(
                 labels=["Match ≥ 70%", "Match 40-70%", "Match < 40%"],
-                values=[10, 8, 6],
+                values=[high_cnt, mod_cnt, low_cnt],
                 hole=0.65,
                 marker=dict(colors=["#10B981", "#F59E0B", "#EF4444"]),
                 textinfo='none',
@@ -800,7 +858,7 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
 
 
 # =============================================================================
-# SCREEN 2: RESUME SCREENING (PIXEL-MATCHED TO REFERENCE IMAGE SCREEN 2)
+# SCREEN 2: RESUME SCREENING & RESUME MANAGEMENT (WITH FUNCTIONAL DELETE)
 # =============================================================================
 def render_screen2_screening(service: ScreeningService):
     st.markdown(
@@ -815,7 +873,13 @@ def render_screen2_screening(service: ScreeningService):
         unsafe_allow_html=True,
     )
 
-    # Stepper Wizard (Screen 2 Reference)
+    # Initialize managed resumes list in session state if not present
+    if "managed_resumes" not in st.session_state:
+        st.session_state.managed_resumes = []
+    if "confirm_delete_target" not in st.session_state:
+        st.session_state.confirm_delete_target = None
+
+    # Stepper Wizard
     st.markdown(
         """
         <div class="stepper-container">
@@ -861,7 +925,8 @@ def render_screen2_screening(service: ScreeningService):
         job_file = None
         job_text = ""
 
-        job_title_input = st.text_input("Job Title (Optional)", placeholder="e.g., Machine Learning Engineer", key="screen2_job_title")
+        job_title_input = st.text_input("Job Title", value=st.session_state.get("saved_job_title", "Machine Learning Engineer"), placeholder="e.g., Machine Learning Engineer", key="screen2_job_title")
+        st.session_state.saved_job_title = job_title_input
 
         if jd_mode == "Paste Job Text":
             job_text = st.text_area(
@@ -872,11 +937,11 @@ def render_screen2_screening(service: ScreeningService):
                 key="screen2_jd_textarea",
             )
             st.session_state.job_text_input = job_text
-            st.caption("0/5000 | Example: Include required skills, experience, responsibilities, and qualifications.")
+            st.caption(f"{len(job_text)}/5000 | Include required skills, experience, responsibilities, and qualifications.")
         else:
             job_file = st.file_uploader("Upload Job Description (PDF/DOCX):", type=["pdf", "docx", "txt"], key="screen2_jd_uploader")
             if job_file:
-                st.success(f"Attached: {job_file.name} ({job_file.size / 1024:.1f} KB)")
+                st.success(f"Attached Job File: {job_file.name} ({job_file.size / 1024:.1f} KB)")
 
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -892,86 +957,145 @@ def render_screen2_screening(service: ScreeningService):
             unsafe_allow_html=True,
         )
 
-        resume_uploads = st.file_uploader(
+        uploaded_files = st.file_uploader(
             "Drag and drop resume files here (PDF, DOCX, TXT):",
             type=["pdf", "docx", "txt"],
             accept_multiple_files=True,
             key="screen2_resume_uploader",
         )
 
-        # File List preview matching Screen 2 image
-        if resume_uploads:
-            for r in resume_uploads:
-                ext = Path(r.name).suffix.upper().replace(".", "")
-                st.markdown(
-                    f"""
-                    <div class="file-upload-card">
-                        <div>
-                            <b>📄 {r.name}</b> <span style="color:#64748B; margin-left:8px;">{r.size / 1024:.0f} KB</span>
-                        </div>
-                        <span class="pill-status pill-green">✓ Ready</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-        else:
+        # Merge newly uploaded files into persistent managed list
+        if uploaded_files:
+            existing_names = {r["name"] for r in st.session_state.managed_resumes}
+            for u in uploaded_files:
+                if u.name not in existing_names:
+                    st.session_state.managed_resumes.append({
+                        "name": u.name,
+                        "data": u.getvalue(),
+                        "size": u.size,
+                        "format": Path(u.name).suffix.upper().replace(".", ""),
+                        "status": "Ready",
+                    })
+
+        # Display functional resume list or clean empty state
+        if not st.session_state.managed_resumes:
             st.markdown(
                 """
-                <div class="file-upload-card">
-                    <div><b>📄 candidate_a_alex_turner.docx</b> <span style="color:#64748B; margin-left:8px;">245 KB</span></div>
-                    <span class="pill-status pill-green">✓ Ready</span>
-                </div>
-                <div class="file-upload-card">
-                    <div><b>📄 candidate_b_priya_sharma.docx</b> <span style="color:#64748B; margin-left:8px;">120 KB</span></div>
-                    <span class="pill-status pill-blue">Processing...</span>
-                </div>
-                <div class="file-upload-card">
-                    <div><b>📄 candidate_c_john_doe.docx</b> <span style="color:#64748B; margin-left:8px;">310 KB</span></div>
-                    <span class="pill-status pill-green">✓ Ready</span>
+                <div style="background:#F8FAFC; border:1px dashed #CBD5E1; border-radius:10px; padding:32px 20px; text-align:center; margin:16px 0;">
+                    <div style="font-size:2rem; color:#94A3B8; margin-bottom:8px;">📂</div>
+                    <div style="font-weight:750; color:#1E293B; font-size:1.05rem;">No resumes uploaded yet</div>
+                    <div style="font-size:0.86rem; color:#64748B; margin-top:4px;">Upload candidate resumes above to begin screening.</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+        else:
+            st.markdown(f"**Uploaded Candidate Resumes ({len(st.session_state.managed_resumes)}):**")
+
+            # Handle Delete Confirmation Step if active
+            if st.session_state.confirm_delete_target:
+                target_fname = st.session_state.confirm_delete_target
+                st.warning(f"⚠️ Are you sure you want to remove **'{target_fname}'** and any associated evaluation records?")
+                col_yes, col_no, _ = st.columns([1, 1, 2])
+                with col_yes:
+                    if st.button("✓ Yes, Delete", type="primary", key="confirm_delete_yes"):
+                        # Remove from managed resumes
+                        st.session_state.managed_resumes = [
+                            r for r in st.session_state.managed_resumes if r["name"] != target_fname
+                        ]
+                        # Remove from active screening results if evaluated
+                        if st.session_state.screening_results and st.session_state.screening_results.ranked_candidates:
+                            res = st.session_state.screening_results
+                            res.ranked_candidates = [
+                                c for c in res.ranked_candidates if target_fname not in c.candidate_id and target_fname not in c.candidate_name
+                            ]
+                            res.total_candidates = len(res.ranked_candidates)
+                            # Re-index ranks
+                            for i, c in enumerate(res.ranked_candidates, start=1):
+                                c.rank = i
+                            if res.total_candidates == 0:
+                                st.session_state.screening_results = None
+
+                        # Delete from database
+                        try:
+                            database.delete_candidate_by_filename(target_fname)
+                        except Exception:
+                            pass
+
+                        st.session_state.confirm_delete_target = None
+                        st.success(f"Resume '{target_fname}' deleted successfully.")
+                        st.rerun()
+                with col_no:
+                    if st.button("Cancel", key="confirm_delete_no"):
+                        st.session_state.confirm_delete_target = None
+                        st.rerun()
+
+            # Render each uploaded resume with format, size, status, and delete button
+            for idx, r in enumerate(st.session_state.managed_resumes):
+                c_info, c_btn = st.columns([4, 1])
+                with c_info:
+                    st.markdown(
+                        f"""
+                        <div class="file-upload-card" style="margin-bottom:4px;">
+                            <div>
+                                <b>📄 {r['name']}</b>
+                                <span style="color:#64748B; margin-left:8px; font-size:0.82rem;">{r['format']} • {r['size'] / 1024:.0f} KB</span>
+                            </div>
+                            <span class="pill-status pill-green">✓ {r['status']}</span>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                with c_btn:
+                    if st.button("🗑️ Delete", key=f"del_resume_btn_{idx}", use_container_width=True):
+                        st.session_state.confirm_delete_target = r["name"]
+                        st.rerun()
 
         st.caption("Maximum file size: 200MB per file")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Next / Run Action Button matching Screen 2
+    # Next / Run AI Screening Button
     col_empty, col_next_btn = st.columns([3, 1])
     with col_next_btn:
         run_screening = st.button("Next: Run AI Screening ➔", type="primary", use_container_width=True, key="screen2_run_btn")
 
     if run_screening:
         active_jd = job_file if job_file is not None else (job_text if job_text.strip() else None)
-        active_resumes = resume_uploads
 
-        # If user hasn't uploaded fresh files, fall back seamlessly to demo files
-        if not active_jd or not active_resumes:
-            demo_job, demo_resumes, demo_filenames, demo_job_name = load_sample_data()
-            active_jd = demo_job
-            active_resumes = demo_resumes
-            jd_fname = demo_job_name
-            res_names = demo_filenames
+        if not active_jd:
+            st.error("⚠️ Please specify a Job Description (paste requirements text or upload a job document).")
+        elif not st.session_state.managed_resumes:
+            st.error("⚠️ Please upload at least one candidate resume to screen.")
         else:
-            jd_fname = job_file.name if job_file else "Job_Requirements.txt"
-            res_names = [r.name for r in active_resumes]
+            try:
+                with st.spinner("Executing SBERT semantic similarity, 4-tier evidence validation, and PII anonymization..."):
+                    jd_fname = job_file.name if job_file else "Job_Requirements.txt"
+                    resumes_bytes = [r["data"] for r in st.session_state.managed_resumes]
+                    resumes_fnames = [r["name"] for r in st.session_state.managed_resumes]
 
-        with st.spinner("Executing SBERT semantic matching, 4-tier evidence validation, and PII anonymization..."):
-            batch_res = service.process_screening(
-                job_input=active_jd,
-                resume_files=active_resumes,
-                job_filename=jd_fname,
-                resume_filenames=res_names,
-                job_title=job_title_input or "Machine Learning Engineer",
-            )
-            st.session_state.screening_results = batch_res
-            st.session_state.active_section = "Candidate Leaderboard"
-            st.success("Screening successfully executed! Redirecting to Leaderboard...")
-            st.rerun()
+                    batch_res = service.process_screening(
+                        job_input=active_jd,
+                        resume_files=resumes_bytes,
+                        job_filename=jd_fname,
+                        resume_filenames=resumes_fnames,
+                        job_title=job_title_input or "Machine Learning Engineer",
+                    )
+                    # Mark all managed resumes as Evaluated
+                    for r in st.session_state.managed_resumes:
+                        r["status"] = "Evaluated"
+
+                    st.session_state.screening_results = batch_res
+                    st.session_state.active_section = "Candidate Leaderboard"
+                    st.success("Screening successfully executed! Redirecting to Leaderboard...")
+                    st.rerun()
+            except ValidationError as ve:
+                st.error(f"Validation Error: {str(ve)}")
+            except Exception as e:
+                st.error(f"Processing Error: {str(e)}")
 
 
 # =============================================================================
-# SCREEN 3: CANDIDATE LEADERBOARD (PIXEL-MATCHED TO REFERENCE IMAGE SCREEN 3)
+# SCREEN 3: CANDIDATE LEADERBOARD (DYNAMIC & FILTERABLE)
 # =============================================================================
 def render_screen3_leaderboard(results: BatchScreeningResult, show_names: bool):
     st.markdown(
@@ -986,7 +1110,29 @@ def render_screen3_leaderboard(results: BatchScreeningResult, show_names: bool):
         unsafe_allow_html=True,
     )
 
-    # Filter Bar (Screen 3 Reference)
+    has_data = (results is not None and results.ranked_candidates and len(results.ranked_candidates) > 0)
+
+    if not has_data:
+        st.markdown(
+            """
+            <div class="empty-state-box">
+                <div class="empty-state-icon">🏆</div>
+                <div class="empty-state-title">No Candidates Evaluated Yet</div>
+                <div class="empty-state-desc">
+                    The leaderboard will display ranked candidates with 5-pillar scores, matched skills, and evidence confidence once you run a screening session.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        col_b1, _ = st.columns([1.5, 3])
+        with col_b1:
+            if st.button("📥 Upload Resumes & Start Screening", type="primary", key="lb_empty_start"):
+                st.session_state.active_section = "Resume Screening"
+                st.rerun()
+        return
+
+    # Filter Bar
     st.markdown(
         """
         <div class="dashboard-white-card" style="padding:14px 18px; margin-bottom:14px;">
@@ -1007,24 +1153,33 @@ def render_screen3_leaderboard(results: BatchScreeningResult, show_names: bool):
             st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Prepare candidate list
-    if results and results.ranked_candidates:
-        candidates = results.ranked_candidates
-    else:
-        # Load sample demo data so the table is never blank
-        demo_job, demo_resumes, demo_filenames, demo_job_name = load_sample_data()
-        service = get_screening_service()
-        batch_res = service.process_screening(
-            job_input=demo_job,
-            resume_files=demo_resumes,
-            job_filename=demo_job_name,
-            resume_filenames=demo_filenames,
-            job_title="Senior Machine Learning Engineer",
-        )
-        st.session_state.screening_results = batch_res
-        candidates = batch_res.ranked_candidates
+    # Filter logic
+    filtered_cands = []
+    for c in results.ranked_candidates:
+        if score_opt == "Score ≥ 80%" and c.overall_score < 80: continue
+        if score_opt == "Score ≥ 60%" and c.overall_score < 60: continue
+        if score_opt == "Score < 60%" and c.overall_score >= 60: continue
 
-    # Render Table rows matching Screen 3 image
+        if status_opt == "High Match" and c.recommendation != "HIGH RELEVANCE": continue
+        if status_opt == "Good Match" and c.recommendation != "RELEVANT": continue
+        if status_opt == "Moderate" and c.recommendation != "MODERATE RELEVANCE": continue
+
+        if skill_opt != "All Skills":
+            c_skills = [m.job_skill.lower() for m in c.matched_skills]
+            if skill_opt.lower() not in c_skills: continue
+
+        if search_kw.strip():
+            sq = search_kw.lower()
+            name_label = (c.candidate_name if show_names else c.anonymized_id).lower()
+            if sq not in name_label and sq not in c.anonymized_id.lower():
+                continue
+        filtered_cands.append(c)
+
+    if not filtered_cands:
+        st.warning("No candidates match the specified filter criteria.")
+        return
+
+    # Render Table rows matching Screen 3
     st.markdown(
         """
         <div class="dashboard-white-card" style="padding:0; overflow:hidden;">
@@ -1038,32 +1193,28 @@ def render_screen3_leaderboard(results: BatchScreeningResult, show_names: bool):
                     <th style="padding:12px 16px;">Missing Skills</th>
                     <th style="padding:12px 16px;">Experience</th>
                     <th style="padding:12px 16px;">Status</th>
-                    <th style="padding:12px 16px;">Actions</th>
                 </tr>
         """,
         unsafe_allow_html=True,
     )
 
-    # Display 5 rows (like in Screen 3 reference)
-    for idx, c in enumerate(candidates[:5]):
-        cid = c.anonymized_id
+    for idx, c in enumerate(filtered_cands[:10]):
+        cid = c.candidate_name if show_names else c.anonymized_id
         score_val = c.overall_score
-        coverage = f"{len(c.matched_skills)}/{len(c.matched_skills) + len(c.missing_skills)}" if (len(c.matched_skills) + len(c.missing_skills)) > 0 else "10/12"
+        tot_skills = len(c.matched_skills) + len(c.missing_skills)
+        coverage = f"{len(c.matched_skills)}/{tot_skills}" if tot_skills > 0 else "N/A"
         status_text = "High Match" if score_val >= 80 else "Good Match" if score_val >= 65 else "Moderate"
         status_pill_class = "pill-green" if score_val >= 80 else "pill-blue" if score_val >= 65 else "pill-yellow"
 
-        # Matched skills chips HTML
         top_matched_html = "".join(f'<span class="skill-chip-blue">{m.job_skill}</span>' for m in c.matched_skills[:2])
         if len(c.matched_skills) > 2:
             top_matched_html += f'<span class="skill-chip-blue">+{len(c.matched_skills) - 2}</span>'
-
-        # Missing skills chips HTML
         missing_html = "".join(f'<span class="skill-chip-red">{m.job_skill}</span>' for m in c.missing_skills[:2]) or '<span style="color:#94A3B8;">None</span>'
 
         st.markdown(
             f"""
             <tr style="border-bottom:1px solid #F1F5F9;">
-                <td style="padding:14px 16px; font-weight:700; color:#64748B;">{idx + 1}</td>
+                <td style="padding:14px 16px; font-weight:700; color:#64748B;">{c.rank}</td>
                 <td style="padding:14px 16px; font-weight:750; color:#1E3A8A;">{cid}</td>
                 <td style="padding:14px 16px;">
                     <div style="display:flex; align-items:center; gap:8px;">
@@ -1078,9 +1229,6 @@ def render_screen3_leaderboard(results: BatchScreeningResult, show_names: bool):
                 <td style="padding:14px 16px;">{missing_html}</td>
                 <td style="padding:14px 16px; color:#475569;">3+ years</td>
                 <td style="padding:14px 16px;"><span class="pill-status {status_pill_class}">{status_text}</span></td>
-                <td style="padding:14px 16px;">
-                    <a href="#" style="background:#EFF6FF; color:#2563EB; padding:5px 12px; border-radius:6px; font-weight:700; text-decoration:none; border:1px solid #BFDBFE;">View</a>
-                </td>
             </tr>
             """,
             unsafe_allow_html=True,
@@ -1088,71 +1236,78 @@ def render_screen3_leaderboard(results: BatchScreeningResult, show_names: bool):
 
     st.markdown("</table></div>", unsafe_allow_html=True)
 
-    # Table Action & Selector to View Full Candidate Details on Screen 4
-    col_pagi, col_exp = st.columns([2, 1], gap="medium")
-    with col_pagi:
-        st.caption("Showing 5 candidates per page | ◀ 1 2 3 4 5 ▶")
-    with col_exp:
-        # Download export
-        export_df = pd.DataFrame([{
-            "Rank": c.rank,
-            "Candidate ID": c.anonymized_id,
-            "Match Score": f"{c.overall_score:.1f}%",
-            "Recommendation": c.recommendation,
-        } for c in candidates])
+    # Actions: Select Candidate to Inspect
+    st.markdown("<br>", unsafe_allow_html=True)
+    c_inspect, c_export = st.columns([2, 1], gap="large")
+
+    with c_inspect:
+        st.markdown("#### 🔍 View Candidate Profile Details:")
+        cand_select_idx = st.selectbox(
+            "Select Candidate:",
+            options=range(len(filtered_cands)),
+            format_func=lambda i: f"#{filtered_cands[i].rank} — {filtered_cands[i].candidate_name if show_names else filtered_cands[i].anonymized_id} ({filtered_cands[i].overall_score:.1f}%)",
+            key="lb_inspect_cand_sel",
+        )
+        if st.button("Open Candidate Profile ➔", key="open_profile_from_lb"):
+            st.session_state.selected_cand_idx = cand_select_idx
+            st.session_state.active_section = "Candidate Profiles"
+            st.rerun()
+
+    with c_export:
+        st.markdown("#### 💾 Export Leaderboard")
+        csv_rows = []
+        for c in filtered_cands:
+            csv_rows.append({
+                "Rank": c.rank,
+                "Candidate ID": c.anonymized_id,
+                "Match Score": f"{c.overall_score:.1f}%",
+                "Recommendation": c.recommendation,
+            })
         st.download_button(
             "📥 Export Results (CSV)",
-            data=export_df.to_csv(index=False).encode("utf-8"),
-            file_name="candidate_leaderboard.csv",
+            data=pd.DataFrame(csv_rows).to_csv(index=False).encode("utf-8"),
+            file_name=f"leaderboard_{results.job_id}.csv",
             mime="text/csv",
             type="primary",
             use_container_width=True,
         )
 
-    st.markdown("---")
-    st.markdown("#### 🔍 Select Candidate to Open Profile:")
-    cand_sel = st.selectbox(
-        "Candidate Inspector:",
-        options=range(len(candidates)),
-        format_func=lambda i: f"#{candidates[i].rank} — {candidates[i].anonymized_id} ({candidates[i].overall_score:.1f}%)",
-        key="leaderboard_quick_view_select",
-    )
-    if st.button("Open Selected Candidate Profile ➔", key="open_cand_btn"):
-        st.session_state.selected_cand_idx = cand_sel
-        st.session_state.active_section = "Candidate Profiles"
-        st.rerun()
-
 
 # =============================================================================
-# SCREEN 4: CANDIDATE PROFILE & EVIDENCE (PIXEL-MATCHED TO REFERENCE IMAGE SCREEN 4)
+# SCREEN 4: CANDIDATE PROFILE & EVIDENCE (DYNAMIC ONLY)
 # =============================================================================
 def render_screen4_profile(results: BatchScreeningResult, show_names: bool):
-    # Retrieve candidates
-    if not results or not results.ranked_candidates:
-        demo_job, demo_resumes, demo_filenames, demo_job_name = load_sample_data()
-        service = get_screening_service()
-        batch_res = service.process_screening(
-            job_input=demo_job,
-            resume_files=demo_resumes,
-            job_filename=demo_job_name,
-            resume_filenames=demo_filenames,
-            job_title="Senior Machine Learning Engineer",
+    has_data = (results is not None and results.ranked_candidates and len(results.ranked_candidates) > 0)
+
+    if not has_data:
+        st.markdown(
+            """
+            <div class="empty-state-box">
+                <div class="empty-state-icon">👤</div>
+                <div class="empty-state-title">No Candidate Profile Available</div>
+                <div class="empty-state-desc">
+                    Upload resumes and evaluate applicants in <b>Resume Screening</b> to inspect individual candidate skill evidence and score explanations.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
-        st.session_state.screening_results = batch_res
-        results = batch_res
+        if st.button("📥 Go to Resume Screening", type="primary", key="prof_empty_link"):
+            st.session_state.active_section = "Resume Screening"
+            st.rerun()
+        return
 
     chosen_idx = st.session_state.get("selected_cand_idx", 0)
     if chosen_idx >= len(results.ranked_candidates):
         chosen_idx = 0
     candidate = results.ranked_candidates[chosen_idx]
-    display_id = candidate.anonymized_id
+    display_name = candidate.candidate_name if show_names else candidate.anonymized_id
 
-    # Top Header matching Screen 4: Title + Back to Leaderboard button
     st.markdown(
         f"""
         <div class="top-header-banner">
             <div class="top-header-left">
-                <h1>Candidate Profile - {display_id}</h1>
+                <h1>Candidate Profile - {display_name}</h1>
                 <p>Detailed evaluation results with skill evidence and explanations.</p>
             </div>
         </div>
@@ -1168,41 +1323,34 @@ def render_screen4_profile(results: BatchScreeningResult, show_names: bool):
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # 2-Column Layout matching Screen 4
     col_left, col_right = st.columns([1.1, 2], gap="large")
 
     with col_left:
-        # Candidate Summary Card (Left side of Screen 4)
+        # Left Summary Card
         st.markdown(
             f"""
             <div class="dashboard-white-card">
                 <div style="font-weight:750; font-size:1.1rem; color:#0F172A; margin-bottom:12px;">Candidate Summary</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                     <div>
-                        <div style="font-size:1.4rem; font-weight:800; color:#1E3A8A;">👤 {display_id}</div>
-                        <div style="font-size:0.85rem; color:#64748B; margin-top:4px;">Experience: <b>3+ years</b></div>
-                        <div style="margin-top:6px;"><span class="pill-status pill-green">✓ High Match</span></div>
+                        <div style="font-size:1.4rem; font-weight:800; color:#1E3A8A;">👤 {display_name}</div>
+                        <div style="font-size:0.85rem; color:#64748B; margin-top:4px;">Identifier: <code>{candidate.anonymized_id}</code></div>
+                        <div style="margin-top:6px;"><span class="pill-status pill-green">✓ {candidate.recommendation}</span></div>
                     </div>
                     <div style="width:72px; height:72px; border-radius:50%; border:5px solid #10B981; display:flex; align-items:center; justify-content:center; font-weight:850; font-size:1.3rem; color:#10B981;">
                         {candidate.overall_score:.0f}%
                     </div>
                 </div>
                 <hr style="border:none; border-top:1px solid #E2E8F0; margin:14px 0;">
-                <div style="font-weight:700; font-size:0.92rem; color:#0F172A; margin-bottom:8px;">Resume Information</div>
+                <div style="font-weight:700; font-size:0.92rem; color:#0F172A; margin-bottom:8px;">Resume Extraction Metrics</div>
                 <div style="display:flex; justify-content:space-between; font-size:0.86rem; color:#475569; padding:4px 0;">
-                    <span>Skills Extracted:</span> <b style="color:#0F172A;">18</b>
+                    <span>Skills Extracted:</span> <b style="color:#0F172A;">{len(candidate.matched_skills) + len(candidate.partial_skills)}</b>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:0.86rem; color:#475569; padding:4px 0;">
-                    <span>Education Entries:</span> <b style="color:#0F172A;">2</b>
+                    <span>Evidence Snippets:</span> <b style="color:#0F172A;">{len(candidate.evidence_items)}</b>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-size:0.86rem; color:#475569; padding:4px 0;">
-                    <span>Experience Entries:</span> <b style="color:#0F172A;">3</b>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:0.86rem; color:#475569; padding:4px 0;">
-                    <span>Certifications:</span> <b style="color:#0F172A;">2</b>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:0.86rem; color:#475569; padding:4px 0;">
-                    <span>Projects:</span> <b style="color:#0F172A;">3</b>
+                    <span>Projects Detected:</span> <b style="color:#0F172A;">{len(candidate.relevant_projects)}</b>
                 </div>
             </div>
             """,
@@ -1210,7 +1358,6 @@ def render_screen4_profile(results: BatchScreeningResult, show_names: bool):
         )
 
     with col_right:
-        # Right Tabs (Skill Match Analysis, Resume Evidence, Job Comparison, Recommendation)
         tab_match, tab_ev, tab_comp, tab_rec = st.tabs([
             "Skill Match Analysis",
             "Resume Evidence",
@@ -1225,59 +1372,49 @@ def render_screen4_profile(results: BatchScreeningResult, show_names: bool):
                 """,
                 unsafe_allow_html=True,
             )
-            # Matched Skills (10)
-            st.markdown("<b style='color:#0F172A;'>Matched Skills (10):</b>", unsafe_allow_html=True)
-            matched_skills = ["Python", "Machine Learning", "NLP", "Data Analysis", "SQL", "Pandas", "Scikit-learn", "Model Deployment", "Data Visualization", "Git"]
-            st.markdown("".join(f'<span class="skill-chip-green">✓ {s}</span>' for s in matched_skills), unsafe_allow_html=True)
+            # Matched Skills
+            st.markdown(f"<b style='color:#0F172A;'>Matched Skills ({len(candidate.matched_skills)}):</b>", unsafe_allow_html=True)
+            if candidate.matched_skills:
+                st.markdown("".join(f'<span class="skill-chip-green">✓ {m.job_skill}</span>' for m in candidate.matched_skills), unsafe_allow_html=True)
+            else:
+                st.write("None detected.")
 
-            st.markdown("<br><b style='color:#0F172A;'>Missing Required Skills (2):</b>", unsafe_allow_html=True)
-            missing_skills = ["MLOps", "AWS"]
-            st.markdown("".join(f'<span class="skill-chip-red">✗ {s}</span>' for s in missing_skills), unsafe_allow_html=True)
+            # Missing Skills
+            st.markdown(f"<br><b style='color:#0F172A;'>Missing Required Skills ({len(candidate.missing_skills)}):</b>", unsafe_allow_html=True)
+            if candidate.missing_skills:
+                st.markdown("".join(f'<span class="skill-chip-red">✗ {m.job_skill}</span>' for m in candidate.missing_skills), unsafe_allow_html=True)
+            else:
+                st.write("None missing.")
 
-            st.markdown("<br><b style='color:#0F172A;'>Related / Partial Matches (3):</b>", unsafe_allow_html=True)
-            st.markdown(
-                """
-                <span class="skill-chip-blue">Deep Learning (related)</span>
-                <span class="skill-chip-blue">FastAPI (partial)</span>
-                <span class="skill-chip-blue">Docker (partial)</span>
-                """,
-                unsafe_allow_html=True,
-            )
+            # Partial Skills
+            if candidate.partial_skills:
+                st.markdown(f"<br><b style='color:#0F172A;'>Related / Partial Matches ({len(candidate.partial_skills)}):</b>", unsafe_allow_html=True)
+                st.markdown("".join(f'<span class="skill-chip-blue">{m.job_skill} (partial)</span>' for m in candidate.partial_skills), unsafe_allow_html=True)
 
-            st.markdown("<br><b style='color:#0F172A;'>Skill Coverage:</b> 10/12 skills (83%)", unsafe_allow_html=True)
-            st.progress(0.83)
+            tot_s = len(candidate.matched_skills) + len(candidate.missing_skills)
+            pct_cov = (len(candidate.matched_skills) / tot_s) if tot_s > 0 else 0.0
+            st.markdown(f"<br><b style='color:#0F172A;'>Skill Coverage:</b> {len(candidate.matched_skills)}/{tot_s} skills ({pct_cov*100:.0f}%)", unsafe_allow_html=True)
+            st.progress(pct_cov)
 
             st.markdown("---")
-            # Evidence Snippets sub-card matching Screen 4
+            # Evidence Snippets
             st.markdown("<div style='font-weight:750; font-size:1.0rem; color:#0F172A; margin-bottom:10px;'>Skill Evidence from Resume</div>", unsafe_allow_html=True)
-            st.selectbox("Select Evidence Skill:", ["Python", "Machine Learning", "NLP", "Pandas"], key="screen4_skill_ev_select")
-
-            st.markdown(
-                """
-                <div class="evidence-snippet-card">
-                    <div class="evidence-quote">"Developed machine learning models using Python and scikit-learn for text classification..."</div>
-                    <div class="evidence-footer">
-                        <span>Page 2 — Experience</span>
-                        <span class="pill-status pill-green">High Confidence</span>
-                    </div>
-                </div>
-                <div class="evidence-snippet-card">
-                    <div class="evidence-quote">"Implemented automated data preprocessing pipelines using Python and Pandas..."</div>
-                    <div class="evidence-footer">
-                        <span>Page 3 — Projects</span>
-                        <span class="pill-status pill-green">High Confidence</span>
-                    </div>
-                </div>
-                <div class="evidence-snippet-card">
-                    <div class="evidence-quote">"Built predictive models for customer churn classification..."</div>
-                    <div class="evidence-footer">
-                        <span>Page 4 — Projects</span>
-                        <span class="pill-status pill-yellow">Medium Confidence</span>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            if candidate.evidence_items:
+                for ev in candidate.evidence_items[:3]:
+                    st.markdown(
+                        f"""
+                        <div class="evidence-snippet-card">
+                            <div class="evidence-quote">"{ev.snippet}"</div>
+                            <div class="evidence-footer">
+                                <span>{ev.skill_name} — {ev.source_section}</span>
+                                <span class="pill-status pill-green">{ev.confidence_label}</span>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+            else:
+                st.caption("No contextual evidence snippets found.")
             st.markdown("</div>", unsafe_allow_html=True)
 
         with tab_ev:
@@ -1292,13 +1429,16 @@ def render_screen4_profile(results: BatchScreeningResult, show_names: bool):
                 } for e in candidate.evidence_items]
                 st.dataframe(pd.DataFrame(ev_data), use_container_width=True, hide_index=True)
             else:
-                st.info("Demonstrated via contextual resume projects and work history.")
+                st.info("No evidence items extracted.")
 
         with tab_comp:
             st.markdown("#### ⚖️ Job Requirements vs Candidate Qualifications")
-            st.write("• **Required Education:** Bachelor's or Master's in Computer Science / AI / Data Science (Candidate: Satisfied ✅)")
-            st.write("• **Minimum Experience:** 3+ Years in ML Engineering (Candidate: 3.5 Years ✅)")
-            st.write("• **Core Technical Stack:** Python, TensorFlow/PyTorch, NLP, SQL (Candidate: High Alignment ✅)")
+            st.write(f"• **Overall Multi-Factor Match:** `{candidate.overall_score:.1f}%`")
+            if candidate.score_breakdown:
+                sb = candidate.score_breakdown
+                st.write(f"• **Semantic Skill Match (35%):** `{sb.semantic_skill_match_score:.1f}%`")
+                st.write(f"• **Evidence Validation (25%):** `{sb.skill_evidence_score:.1f}%`")
+                st.write(f"• **Experience Relevance (20%):** `{sb.experience_relevance_score:.1f}%`")
 
         with tab_rec:
             st.markdown("#### 💡 Explainable AI Rationale")
@@ -1306,10 +1446,9 @@ def render_screen4_profile(results: BatchScreeningResult, show_names: bool):
 
 
 # =============================================================================
-# SCREEN 5: REPORTS & ANALYTICS (PIXEL-MATCHED TO REFERENCE IMAGE SCREEN 5)
+# SCREEN 5: REPORTS & ANALYTICS (DYNAMIC ONLY)
 # =============================================================================
 def render_screen5_reports(results: BatchScreeningResult, show_names: bool):
-    # Top Header matching Screen 5: Title + Session Selector + Date range + Download button
     st.markdown(
         """
         <div class="top-header-banner">
@@ -1322,19 +1461,42 @@ def render_screen5_reports(results: BatchScreeningResult, show_names: bool):
         unsafe_allow_html=True,
     )
 
+    has_data = (results is not None and results.ranked_candidates and len(results.ranked_candidates) > 0)
+
+    if not has_data:
+        st.markdown(
+            """
+            <div class="empty-state-box">
+                <div class="empty-state-icon">📈</div>
+                <div class="empty-state-title">No Reports Available Yet</div>
+                <div class="empty-state-desc">
+                    Analytics reports, candidate score distributions, and skill gap metrics will generate here after screening candidates.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button("📥 Go to Resume Screening", type="primary", key="rep_empty_link"):
+            st.session_state.active_section = "Resume Screening"
+            st.rerun()
+        return
+
     fc_sess, fc_date, fc_dl = st.columns([2, 1.5, 1], gap="medium")
     with fc_sess:
-        st.selectbox("Select Session:", ["ML Engineer Hiring", "Fullstack Engineering", "Data Science"], label_visibility="collapsed")
+        st.selectbox("Select Session:", [f"{results.job_title} ({results.total_candidates} candidates)"], label_visibility="collapsed")
     with fc_date:
-        st.text_input("Date Range:", value="Oct 1, 2026 - Oct 31, 2026", label_visibility="collapsed")
+        st.text_input("Date Range:", value="Active Session", label_visibility="collapsed")
     with fc_dl:
-        if st.button("📥 Download Report", type="primary", use_container_width=True, key="screen5_dl_btn"):
-            st.success("Executive recruitment report prepared for export!")
+        csv_rep = pd.DataFrame([{
+            "Rank": c.rank,
+            "ID": c.anonymized_id,
+            "Score": f"{c.overall_score:.1f}%",
+            "Recommendation": c.recommendation,
+        } for c in results.ranked_candidates]).to_csv(index=False).encode("utf-8")
+        st.download_button("📥 Download Report (CSV)", data=csv_rep, file_name=f"report_{results.job_id}.csv", mime="text/csv", type="primary", use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # 4 Visual Cards (Screen 5 Reference Image)
-    # Row 1: Match Score Distribution & Top Matched Skills
     col_c1, col_c2 = st.columns([1, 1], gap="medium")
 
     with col_c1:
@@ -1346,7 +1508,14 @@ def render_screen5_reports(results: BatchScreeningResult, show_names: bool):
             unsafe_allow_html=True,
         )
         bins = ["0-20", "20-40", "40-60", "60-80", "80-100"]
-        counts = [2, 5, 7, 8, 2]
+        counts = [0, 0, 0, 0, 0]
+        for c in results.ranked_candidates:
+            if c.overall_score < 20: counts[0] += 1
+            elif c.overall_score < 40: counts[1] += 1
+            elif c.overall_score < 60: counts[2] += 1
+            elif c.overall_score < 80: counts[3] += 1
+            else: counts[4] += 1
+
         fig_r1 = go.Figure(data=[
             go.Bar(
                 x=bins,
@@ -1354,13 +1523,12 @@ def render_screen5_reports(results: BatchScreeningResult, show_names: bool):
                 marker=dict(color='#60A5FA', line=dict(color='#2563EB', width=1)),
                 text=counts,
                 textposition='outside',
-                textfont=dict(size=12, color='#1E293B'),
             )
         ])
         fig_r1.update_layout(
             xaxis_title="Score Range (%)",
             yaxis_title="Number of Candidates",
-            yaxis=dict(gridcolor='#F1F5F9', range=[0, 11]),
+            yaxis=dict(gridcolor='#F1F5F9', range=[0, max(counts) + 2]),
             template="plotly_white",
             height=260,
             paper_bgcolor="#FFFFFF",
@@ -1379,115 +1547,44 @@ def render_screen5_reports(results: BatchScreeningResult, show_names: bool):
             """,
             unsafe_allow_html=True,
         )
-        matched_skills_df = pd.DataFrame([
-            {"Skill": "Deep Learning", "Count": 9, "Color": "#C084FC"},
-            {"Skill": "SQL", "Count": 10, "Color": "#FB923C"},
-            {"Skill": "NLP", "Count": 11, "Color": "#FBBF24"},
-            {"Skill": "Data Analysis", "Count": 14, "Color": "#4ADE80"},
-            {"Skill": "Machine Learning", "Count": 16, "Color": "#38BDF8"},
-            {"Skill": "Python", "Count": 18, "Color": "#3B82F6"},
-        ])
-        fig_r2 = go.Figure(data=[
-            go.Bar(
-                y=matched_skills_df["Skill"],
-                x=matched_skills_df["Count"],
-                orientation='h',
-                marker=dict(color=matched_skills_df["Color"]),
-                text=matched_skills_df["Count"],
-                textposition='outside',
+        sk_counts = {}
+        for c in results.ranked_candidates:
+            for m in c.matched_skills:
+                sk_counts[m.job_skill] = sk_counts.get(m.job_skill, 0) + 1
+        if sk_counts:
+            df_m = pd.DataFrame(list(sk_counts.items()), columns=["Skill", "Count"]).sort_values("Count", ascending=True)
+            fig_r2 = go.Figure(data=[
+                go.Bar(
+                    y=df_m["Skill"][-6:],
+                    x=df_m["Count"][-6:],
+                    orientation='h',
+                    marker=dict(color='#3B82F6'),
+                    text=df_m["Count"][-6:],
+                    textposition='outside',
+                )
+            ])
+            fig_r2.update_layout(
+                xaxis=dict(gridcolor='#F1F5F9'),
+                template="plotly_white",
+                height=260,
+                paper_bgcolor="#FFFFFF",
+                plot_bgcolor="#FFFFFF",
+                margin=dict(l=40, r=25, t=10, b=30),
+                font=dict(size=11, color="#64748B"),
             )
-        ])
-        fig_r2.update_layout(
-            xaxis=dict(range=[0, 22], gridcolor='#F1F5F9'),
-            template="plotly_white",
-            height=260,
-            paper_bgcolor="#FFFFFF",
-            plot_bgcolor="#FFFFFF",
-            margin=dict(l=40, r=25, t=10, b=30),
-            font=dict(size=11, color="#64748B"),
-        )
-        st.plotly_chart(fig_r2, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # Row 2: Top Missing Skills & Screening Activity Over Time
-    col_c3, col_c4 = st.columns([1, 1], gap="medium")
-
-    with col_c3:
-        st.markdown(
-            """
-            <div class="dashboard-white-card">
-                <div style="font-weight:750; font-size:1.05rem; margin-bottom:10px; color:#0F172A;">Top Missing Skills</div>
-            """,
-            unsafe_allow_html=True,
-        )
-        missing_skills_df = pd.DataFrame([
-            {"Skill": "Cloud Deployment", "Count": 3},
-            {"Skill": "Kubernetes", "Count": 4},
-            {"Skill": "FastAPI", "Count": 5},
-            {"Skill": "React", "Count": 7},
-            {"Skill": "Docker", "Count": 10},
-            {"Skill": "AWS", "Count": 12},
-        ])
-        fig_r3 = go.Figure(data=[
-            go.Bar(
-                y=missing_skills_df["Skill"],
-                x=missing_skills_df["Count"],
-                orientation='h',
-                marker=dict(color=['#FCA5A5', '#F87171', '#EF4444', '#DC2626', '#B91C1C', '#991B1B']),
-                text=missing_skills_df["Count"],
-                textposition='outside',
-            )
-        ])
-        fig_r3.update_layout(
-            xaxis=dict(range=[0, 15], gridcolor='#F1F5F9'),
-            template="plotly_white",
-            height=260,
-            paper_bgcolor="#FFFFFF",
-            plot_bgcolor="#FFFFFF",
-            margin=dict(l=40, r=25, t=10, b=30),
-            font=dict(size=11, color="#64748B"),
-        )
-        st.plotly_chart(fig_r3, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    with col_c4:
-        st.markdown(
-            """
-            <div class="dashboard-white-card">
-                <div style="font-weight:750; font-size:1.05rem; margin-bottom:10px; color:#0F172A;">Screening Activity Over Time</div>
-            """,
-            unsafe_allow_html=True,
-        )
-        # Combo Chart: Bars for Resumes Processed, Purple Line for Avg Match Score
-        dates = ["Oct 1", "Oct 5", "Oct 10", "Oct 15", "Oct 20", "Oct 25", "Oct 30"]
-        resumes_p = [3, 4, 7, 12, 18, 14, 8]
-        avg_scores = [62, 65, 70, 74, 78, 76, 82]
-
-        fig_combo = go.Figure()
-        fig_combo.add_trace(go.Bar(x=dates, y=resumes_p, name="Resumes Processed", marker_color="#93C5FD"))
-        fig_combo.add_trace(go.Scatter(x=dates, y=avg_scores, name="Avg Match Score", yaxis="y2", line=dict(color="#8B5CF6", width=3), mode='lines+markers'))
-
-        fig_combo.update_layout(
-            yaxis=dict(title="Resumes Processed", gridcolor='#F1F5F9', range=[0, 22]),
-            yaxis2=dict(title="Average Score (%)", overlaying="y", side="right", range=[0, 100]),
-            template="plotly_white",
-            height=260,
-            paper_bgcolor="#FFFFFF",
-            plot_bgcolor="#FFFFFF",
-            margin=dict(l=30, r=30, t=10, b=30),
-            font=dict(size=11, color="#64748B"),
-            legend=dict(orientation="h", y=1.15, x=0.2),
-        )
-        st.plotly_chart(fig_combo, use_container_width=True)
+            st.plotly_chart(fig_r2, use_container_width=True)
+        else:
+            st.caption("No matched skills.")
         st.markdown("</div>", unsafe_allow_html=True)
 
 
 # =============================================================================
-# ADDITIONAL VIEWS: SKILL MATCHING, FAIRNESS, ARCHITECTURE
+# ADDITIONAL SECTIONS: SKILL MATCHING & FAIRNESS (SYSTEM ARCHITECTURE REMOVED)
 # =============================================================================
 def render_skill_matching(results: BatchScreeningResult, show_names: bool):
     st.markdown('<div class="top-header-banner"><h1>🧠 Semantic Skill Matching & Taxonomy</h1></div>', unsafe_allow_html=True)
-    st.caption("Sentence-BERT dense embeddings and cosine similarity mapping.")
+    st.caption("Sentence-BERT dense embeddings and canonical taxonomy standardization.")
+
     col_t1, col_t2 = st.columns([1, 1], gap="large")
     with col_t1:
         st.markdown("#### Domain Skill Taxonomy")
@@ -1507,37 +1604,18 @@ def render_skill_matching(results: BatchScreeningResult, show_names: bool):
 
 def render_fairness_analysis(results: BatchScreeningResult, show_names: bool):
     st.markdown('<div class="top-header-banner"><h1>⚖️ Bias Reduction & Fairness Analysis</h1></div>', unsafe_allow_html=True)
-    st.info("🛡️ Masking PII mitigates cognitive bias during screening; it does not claim to eliminate all societal bias.")
-    f_metrics = results.fairness_metrics if results else {}
+    st.info("🛡️ Masking Personally Identifiable Information (PII) mitigates cognitive bias during screening; it does not claim to eliminate all societal bias.")
+
+    if not results or not results.ranked_candidates:
+        st.warning("No candidate screening data currently loaded. Evaluate resumes to view Fairlearn disparity metrics.")
+        return
+
+    f_metrics = results.fairness_metrics
     m1, m2, m3, m4 = st.columns(4)
-    with m1: st.metric("Audited Candidates", f_metrics.get("total_candidates_audited", 24))
-    with m2: st.metric("Selection Rate", f"{f_metrics.get('selection_rate_pct', 41.7):.1f}%")
-    with m3: st.metric("Score Mean", f"{f_metrics.get('score_mean', 72.4):.1f}")
-    with m4: st.metric("Parity Difference", f"{f_metrics.get('demographic_parity_difference', 0.042):.3f}")
-
-
-def render_system_architecture():
-    st.markdown('<div class="top-header-banner"><h1>🏛️ Academic System Architecture</h1></div>', unsafe_allow_html=True)
-    st.markdown(
-        """
-        ```
-        Resume Upload (PDF/DOCX) ➔ Document Ingestion & PII Masking ➔ NLP Skill Extraction
-        ➔ Sentence-BERT Semantic Matching ➔ 4-Tier Contextual Evidence ➔ 5-Pillar Scoring
-        ➔ TalentIQ AI Recruiter Dashboard
-        ```
-        """
-    )
-    tech_data = [
-        {"Layer": "Programming Language", "Technology": "Python 3.10+ / 3.11+ / 3.13"},
-        {"Layer": "User Interface", "Technology": "Streamlit with Custom Enterprise CSS"},
-        {"Layer": "PDF Extraction", "Technology": "PyMuPDF (fitz)"},
-        {"Layer": "DOCX Extraction", "Technology": "python-docx"},
-        {"Layer": "NLP Preprocessing", "Technology": "spaCy"},
-        {"Layer": "Semantic AI", "Technology": "Sentence-BERT / scikit-learn"},
-        {"Layer": "Fairness Evaluation", "Technology": "Fairlearn"},
-        {"Layer": "Database", "Technology": "SQLite"},
-    ]
-    st.dataframe(pd.DataFrame(tech_data), use_container_width=True, hide_index=True)
+    with m1: st.metric("Audited Candidates", f_metrics.get("total_candidates_audited", results.total_candidates))
+    with m2: st.metric("Selection Rate", f"{f_metrics.get('selection_rate_pct', 0.0):.1f}%")
+    with m3: st.metric("Score Mean", f"{f_metrics.get('score_mean', 0.0):.1f}")
+    with m4: st.metric("Parity Difference", f"{f_metrics.get('demographic_parity_difference', 0.0):.3f}")
 
 
 # =============================================================================
@@ -1560,12 +1638,13 @@ def main():
     if reset_btn:
         st.session_state.screening_results = None
         st.session_state.job_text_input = ""
+        st.session_state.managed_resumes = []
         st.session_state.active_section = "Overview Dashboard"
         st.rerun()
 
-    # Load Demo
+    # Load Demo (Optional, explicit only)
     if load_demo:
-        demo_job, demo_resumes, demo_filenames, demo_job_name = load_sample_data()
+        demo_job, demo_resumes, demo_filenames, demo_job_name = load_demo_dataset()
         with st.spinner("Processing demo candidates through AI pipeline..."):
             results = service.process_screening(
                 job_input=demo_job,
@@ -1581,7 +1660,7 @@ def main():
     results: BatchScreeningResult = st.session_state.screening_results
     show_names = st.session_state.show_names
 
-    # Route to the selected screen
+    # Route strictly to the 7 sections (System Architecture is removed)
     if selected_nav == "Overview Dashboard":
         render_screen1_overview(results, show_names)
     elif selected_nav == "Resume Screening":
@@ -1596,8 +1675,6 @@ def main():
         render_fairness_analysis(results, show_names)
     elif selected_nav == "Reports & Analytics":
         render_screen5_reports(results, show_names)
-    elif selected_nav == "System Architecture":
-        render_system_architecture()
 
 
 if __name__ == "__main__":

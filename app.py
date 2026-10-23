@@ -1,6 +1,6 @@
 """
 AI-Driven Resume Screening and Skill Validation System.
-Interactive Recruiter Dashboard Application - Light & White Theme.
+Interactive Recruiter Dashboard Application - Modern, High-Contrast White Theme.
 """
 
 import os
@@ -31,97 +31,220 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom Styling - High-contrast Light/White Theme with larger readable fonts
+# Comprehensive CSS to force crisp high-contrast light theme across all Streamlit widgets
 st.markdown(
     """
     <style>
-    /* Force Crisp White App Background */
-    .stApp {
+    /* ========================================================
+       GLOBAL LIGHT THEME & BACKGROUND
+       ======================================================== */
+    html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #FFFFFF !important;
         color: #0F172A !important;
-        font-size: 1.12rem !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     }
 
-    /* Main Container Padding */
-    .block-container {
+    [data-testid="stHeader"] {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    /* Force text color dark everywhere */
+    p, span, label, h1, h2, h3, h4, h5, h6, .stMarkdown, .stText {
+        color: #0F172A !important;
+    }
+
+    /* ========================================================
+       SIDEBAR STYLING (Spacious, Clean & High-Contrast)
+       ======================================================== */
+    [data-testid="stSidebar"] {
+        background-color: #F8FAFC !important;
+        border-right: 2px solid #E2E8F0 !important;
+        min-width: 320px !important;
+        max-width: 340px !important;
+    }
+    [data-testid="stSidebar"] .block-container {
         padding-top: 2rem !important;
-        padding-bottom: 3.5rem !important;
-        max-width: 95% !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+    .sidebar-brand {
+        font-size: 1.6rem !important;
+        font-weight: 800 !important;
+        color: #1E3A8A !important;
+        margin-bottom: 4px !important;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .sidebar-caption {
+        font-size: 0.95rem !important;
+        color: #64748B !important;
+        margin-bottom: 1.2rem !important;
     }
 
-    /* Large Header & Subtitle */
-    .hero-banner {
-        background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
-        border: 2px solid #DBEAFE;
+    /* ========================================================
+       WIDGET FIXES (Textareas, Inputs, Radio Buttons, Uploaders)
+       ======================================================== */
+    /* Textareas and Inputs: Crisp white background, dark text, clean borders */
+    textarea, input, [data-baseweb="textarea"], [data-baseweb="input"] {
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 2px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        font-size: 1.05rem !important;
+    }
+    textarea:focus, input:focus {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+    }
+
+    /* Labels & Radio Buttons */
+    .stRadio label, .stCheckbox label, .stSelectbox label, .stTextArea label, .stFileUploader label {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+    }
+    .stRadio div[role="radiogroup"] label span {
+        color: #1E293B !important;
+        font-weight: 600 !important;
+        font-size: 1.05rem !important;
+    }
+
+    /* File Uploader styling */
+    [data-testid="stFileUploader"] section {
+        background-color: #F8FAFC !important;
+        border: 2px dashed #94A3B8 !important;
+        border-radius: 10px !important;
+        padding: 20px !important;
+    }
+    [data-testid="stFileUploader"] section * {
+        color: #1E293B !important;
+    }
+
+    /* Buttons: Professional Indigo/Blue Gradient (No garish red) */
+    button[kind="primary"] {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        padding: 12px 28px !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+        transition: all 0.2s ease !important;
+    }
+    button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45) !important;
+        transform: translateY(-2px) !important;
+    }
+    button[kind="secondary"] {
+        background: #FFFFFF !important;
+        color: #1E293B !important;
+        border: 2px solid #CBD5E1 !important;
+        border-radius: 10px !important;
+        font-size: 1.05rem !important;
+        font-weight: 600 !important;
+        padding: 10px 20px !important;
+    }
+    button[kind="secondary"]:hover {
+        border-color: #94A3B8 !important;
+        background: #F1F5F9 !important;
+    }
+
+    /* Alert / Info Boxes: Clean Light Blue with Crisp Dark Text */
+    div[data-baseweb="notification"], .stAlert {
+        background-color: #EFF6FF !important;
+        color: #1E40AF !important;
+        border: 1px solid #BFDBFE !important;
+        border-radius: 10px !important;
+        padding: 14px 18px !important;
+        font-size: 1.05rem !important;
+    }
+    div[data-baseweb="notification"] * {
+        color: #1E40AF !important;
+    }
+
+    /* ========================================================
+       HERO BANNER & TYPOGRAPHY
+       ======================================================== */
+    .hero-container {
+        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+        border: 2px solid #BFDBFE;
         border-radius: 14px;
-        padding: 24px 30px;
-        margin-bottom: 24px;
-        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.06);
+        padding: 24px 32px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
     }
     .hero-title {
         font-size: 2.5rem !important;
-        font-weight: 800 !important;
+        font-weight: 850 !important;
         color: #1E3A8A !important;
-        line-height: 1.25 !important;
+        line-height: 1.2 !important;
         margin-bottom: 8px !important;
     }
     .hero-subtitle {
         font-size: 1.25rem !important;
-        color: #475569 !important;
+        color: #1E40AF !important;
         font-weight: 500 !important;
-        margin-bottom: 0px !important;
     }
 
-    /* Section Headings */
-    .section-header {
+    .section-title {
         font-size: 1.7rem !important;
-        font-weight: 750 !important;
+        font-weight: 800 !important;
         color: #0F172A !important;
-        margin-top: 1.8rem !important;
-        margin-bottom: 1.0rem !important;
-        padding-bottom: 6px !important;
-        border-bottom: 2px solid #E2E8F0 !important;
+        margin-top: 2rem !important;
+        margin-bottom: 1.2rem !important;
+        padding-bottom: 8px !important;
+        border-bottom: 3px solid #E2E8F0 !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
-    /* KPI Stat Cards (White Background with Crisp Borders & Shadows) */
+    /* ========================================================
+       EXECUTIVE KPI CARDS (Crisp White + Blue Accent)
+       ======================================================== */
     .kpi-card {
-        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
         border: 2px solid #E2E8F0 !important;
         border-radius: 12px !important;
-        padding: 20px 16px !important;
+        padding: 22px 16px !important;
         text-align: center !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+        transition: transform 0.2s ease, border-color 0.2s ease;
     }
     .kpi-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12) !important;
-        border-color: #93C5FD !important;
+        border-color: #60A5FA !important;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12) !important;
     }
-    .kpi-value {
-        font-size: 2.7rem !important;
-        font-weight: 850 !important;
+    .kpi-num {
+        font-size: 2.8rem !important;
+        font-weight: 900 !important;
         color: #1D4ED8 !important;
         line-height: 1.1 !important;
     }
-    .kpi-label {
+    .kpi-txt {
         font-size: 1.0rem !important;
-        font-weight: 650 !important;
+        font-weight: 700 !important;
         color: #64748B !important;
         text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
+        letter-spacing: 0.06em !important;
         margin-top: 8px !important;
     }
 
-    /* Status Badges - Large and Vibrant */
+    /* ========================================================
+       STATUS BADGES & SKILL PILLS
+       ======================================================== */
     .badge-high {
         background-color: #DCFCE7 !important;
         color: #15803D !important;
         padding: 6px 16px !important;
         border-radius: 9999px !important;
-        font-weight: 750 !important;
+        font-weight: 800 !important;
         font-size: 1.05rem !important;
-        border: 1px solid #86EFAC !important;
+        border: 2px solid #86EFAC !important;
         display: inline-block;
     }
     .badge-rel {
@@ -129,9 +252,9 @@ st.markdown(
         color: #1D4ED8 !important;
         padding: 6px 16px !important;
         border-radius: 9999px !important;
-        font-weight: 750 !important;
+        font-weight: 800 !important;
         font-size: 1.05rem !important;
-        border: 1px solid #93C5FD !important;
+        border: 2px solid #93C5FD !important;
         display: inline-block;
     }
     .badge-mod {
@@ -139,9 +262,9 @@ st.markdown(
         color: #B45309 !important;
         padding: 6px 16px !important;
         border-radius: 9999px !important;
-        font-weight: 750 !important;
+        font-weight: 800 !important;
         font-size: 1.05rem !important;
-        border: 1px solid #FDE68A !important;
+        border: 2px solid #FDE68A !important;
         display: inline-block;
     }
     .badge-low {
@@ -149,13 +272,12 @@ st.markdown(
         color: #B91C1C !important;
         padding: 6px 16px !important;
         border-radius: 9999px !important;
-        font-weight: 750 !important;
+        font-weight: 800 !important;
         font-size: 1.05rem !important;
-        border: 1px solid #FCA5A5 !important;
+        border: 2px solid #FCA5A5 !important;
         display: inline-block;
     }
 
-    /* Skill Tags */
     .skill-tag {
         display: inline-block;
         background-color: #EFF6FF !important;
@@ -163,9 +285,9 @@ st.markdown(
         padding: 6px 14px !important;
         border-radius: 8px !important;
         margin: 4px !important;
-        font-size: 1.02rem !important;
-        font-weight: 600 !important;
-        border: 1px solid #BFDBFE !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        border: 1.5px solid #BFDBFE !important;
     }
     .missing-tag {
         display: inline-block;
@@ -174,42 +296,25 @@ st.markdown(
         padding: 6px 14px !important;
         border-radius: 8px !important;
         margin: 4px !important;
-        font-size: 1.02rem !important;
-        font-weight: 600 !important;
-        border: 1px solid #FECACA !important;
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        border: 1.5px solid #FECACA !important;
     }
 
-    /* Candidate Detail Card */
-    .profile-card {
+    /* Candidate Profile Card */
+    .profile-box {
         background-color: #FFFFFF !important;
         border: 2px solid #E2E8F0 !important;
-        border-radius: 14px !important;
+        border-radius: 12px !important;
         padding: 24px !important;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
-        margin-bottom: 20px !important;
     }
 
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] {
-        background-color: #F8FAFC !important;
-        border-right: 2px solid #E2E8F0 !important;
-    }
-    .sidebar-title {
-        font-size: 1.5rem !important;
-        font-weight: 800 !important;
-        color: #1E3A8A !important;
-        margin-bottom: 12px !important;
-    }
-
-    /* Increase Streamlit General Font Sizes */
-    p, span, label, .stMarkdown, .stSelectbox, .stCheckbox {
-        font-size: 1.1rem !important;
-    }
-    button[kind="primary"] {
-        font-size: 1.25rem !important;
-        font-weight: 700 !important;
-        padding: 12px 28px !important;
+    /* Dataframe styling */
+    [data-testid="stDataFrame"] {
+        border: 2px solid #E2E8F0 !important;
         border-radius: 10px !important;
+        overflow: hidden !important;
     }
     </style>
     """,
@@ -250,10 +355,9 @@ def load_sample_data():
 
 def render_sidebar():
     """Renders the recruiter sidebar with controls, weights, and shortcuts."""
-    st.sidebar.markdown('<div class="sidebar-title">🏢 Recruiter Portal</div>', unsafe_allow_html=True)
-    st.sidebar.caption("Intelligent Candidate Screening & Skill Validation")
+    st.sidebar.markdown('<div class="sidebar-brand">🏢 Recruiter Portal</div>', unsafe_allow_html=True)
+    st.sidebar.markdown('<div class="sidebar-caption">AI-Powered Resume Screening & Skill Validation</div>', unsafe_allow_html=True)
 
-    st.sidebar.markdown("---")
     st.sidebar.markdown("### ⚡ Quick Actions")
     load_demo = st.sidebar.button(
         "🚀 Load Demo Dataset",
@@ -263,28 +367,28 @@ def render_sidebar():
     )
 
     reset_btn = st.sidebar.button(
-        "🔄 Clear / Reset Dashboard",
+        "🔄 Clear Dashboard",
         use_container_width=True,
-        help="Clears active job and screening results",
+        help="Clears active job description and candidate evaluations",
     )
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 5-Pillar Scoring Framework")
+    st.sidebar.markdown("### 📊 5-Pillar Evaluation Weights")
     st.sidebar.markdown(
         f"""
-        - 🧠 **Semantic Skills:** `{SCORING_WEIGHTS['semantic_skill_match']*100:.0f}%`
-        - 🔬 **Skill Evidence:** `{SCORING_WEIGHTS['skill_evidence']*100:.0f}%`
-        - ⏳ **Experience Tenure:** `{SCORING_WEIGHTS['experience_relevance']*100:.0f}%`
-        - 🎓 **Education Level:** `{SCORING_WEIGHTS['education_relevance']*100:.0f}%`
-        - 🛠️ **Projects & Certs:** `{SCORING_WEIGHTS['projects_certs']*100:.0f}%`
+        - 🧠 **Semantic Skill Match:** `{SCORING_WEIGHTS['semantic_skill_match']*100:.0f}%`
+        - 🔬 **Skill Evidence Validation:** `{SCORING_WEIGHTS['skill_evidence']*100:.0f}%`
+        - ⏳ **Experience Relevance:** `{SCORING_WEIGHTS['experience_relevance']*100:.0f}%`
+        - 🎓 **Education Relevance:** `{SCORING_WEIGHTS['education_relevance']*100:.0f}%`
+        - 🛠️ **Projects & Certifications:** `{SCORING_WEIGHTS['projects_certs']*100:.0f}%`
         """
     )
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🛡️ System Specifications")
-    st.sidebar.caption("• **Semantic Engine:** Sentence-BERT / MiniLM")
-    st.sidebar.caption("• **Document Parsers:** PyMuPDF & python-docx")
-    st.sidebar.caption("• **Persistence:** SQLite Database Active")
+    st.sidebar.markdown("### ℹ️ Engine Status")
+    st.sidebar.markdown("• **Semantic Model:** SBERT / MiniLM")
+    st.sidebar.markdown("• **Parsers:** PyMuPDF & python-docx")
+    st.sidebar.markdown("• **Storage:** SQLite Connected")
 
     return load_demo, reset_btn
 
@@ -318,12 +422,12 @@ def main():
                 job_title="Senior Machine Learning Engineer",
             )
             st.session_state.screening_results = results
-            st.success("✅ Demo dataset processed! Scroll down to inspect the candidate results.")
+            st.success("✅ Demo candidates evaluated successfully! Scroll down to inspect results.")
 
-    # Top Hero Banner
+    # Main Hero Banner
     st.markdown(
         """
-        <div class="hero-banner">
+        <div class="hero-container">
             <div class="hero-title">🎯 AI-Driven Resume Screening & Skill Validation System</div>
             <div class="hero-subtitle">Fair, Explainable, Semantic Candidate Matching with Contextual Evidence Verification</div>
         </div>
@@ -331,50 +435,50 @@ def main():
         unsafe_allow_html=True,
     )
 
-    # ==========================================
-    # SECTION 1: JOB & RESUME INGESTION
-    # ==========================================
-    st.markdown('<div class="section-header">📥 1. Job Description & Candidate Resumes</div>', unsafe_allow_html=True)
+    # =========================================================================
+    # SECTION 1: INGESTION (JOB DESCRIPTION & CANDIDATE RESUMES)
+    # =========================================================================
+    st.markdown('<div class="section-title">📥 1. Job Description & Candidate Resumes</div>', unsafe_allow_html=True)
 
     col_jd, col_resumes = st.columns([1, 1], gap="large")
 
     with col_jd:
-        st.markdown("#### 📋 Step 1: Job Requirements")
-        job_input_mode = st.radio("Choose Input Method:", ["Paste Job Text", "Upload Job Document (PDF/DOCX)"], horizontal=True)
+        st.markdown("#### 📋 Step 1: Job Description Input")
+        job_input_mode = st.radio("Select Input Mode:", ["Paste Job Text", "Upload Job Document (PDF/DOCX)"], horizontal=True)
 
         job_file = None
         job_text = ""
 
         if job_input_mode == "Paste Job Text":
             job_text = st.text_area(
-                "Job Description Content:",
+                "Paste Job Requirements Text:",
                 value=st.session_state.job_text_input,
                 height=220,
                 placeholder="Paste the target job description, qualifications, required skills, and responsibilities...",
             )
         else:
             job_file = st.file_uploader(
-                "Upload Job Description File:",
+                "Upload Job Description Document:",
                 type=["pdf", "docx", "txt"],
-                key="jd_file_uploader_white",
+                key="jd_file_uploader_clean",
             )
             if job_file:
                 st.caption(f"📄 Selected file: **{job_file.name}**")
 
     with col_resumes:
-        st.markdown("#### 📂 Step 2: Candidate Resumes")
+        st.markdown("#### 📂 Step 2: Upload Candidate Resumes")
         resume_uploads = st.file_uploader(
             "Upload Resumes (PDF, DOCX, TXT - Multiple Files Allowed):",
             type=["pdf", "docx", "txt"],
             accept_multiple_files=True,
-            key="resume_uploader_white",
+            key="resume_uploader_clean",
             help="Select one or multiple resumes to screen against the job description",
         )
 
         if resume_uploads:
-            st.info(f"📁 **{len(resume_uploads)} candidate resume(s)** uploaded and ready for evaluation.")
+            st.info(f"📁 **{len(resume_uploads)} candidate resume(s)** uploaded and ready for screening.")
         else:
-            st.caption("Upload candidate resumes here, or click **'🚀 Load Demo Dataset'** in the sidebar to test instantly.")
+            st.caption("Upload candidate resumes above, or click **'🚀 Load Demo Dataset'** in the sidebar to test instantly.")
 
     st.markdown("<br>", unsafe_allow_html=True)
     process_btn = st.button("🚀 Run Screening & Evaluation Pipeline", type="primary", use_container_width=True)
@@ -399,7 +503,7 @@ def main():
                         resume_filenames=resume_fnames,
                     )
                     st.session_state.screening_results = batch_res
-                    st.success(f"✅ Screening complete for {batch_res.total_candidates} candidate(s)! Scroll down to view the full dashboard.")
+                    st.success(f"✅ Screening completed for {batch_res.total_candidates} candidate(s)! Scroll down to inspect the dashboard.")
             except ValidationError as ve:
                 st.error(f"Validation Error: {str(ve)}")
             except Exception as e:
@@ -409,65 +513,65 @@ def main():
     results: BatchScreeningResult = st.session_state.screening_results
     show_names = st.session_state.get("show_names", False)
 
-    # ==========================================
-    # SCROLLING DOWN FOR RESULT: REAL DASHBOARD
-    # ==========================================
+    # =========================================================================
+    # SCROLLING DOWN FOR RESULT: REAL RECRUITER DASHBOARD
+    # =========================================================================
     if results and results.ranked_candidates:
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ==========================================
-        # SECTION 2: EXECUTIVE KPI SUMMARY (4 CARDS)
-        # ==========================================
-        st.markdown(f'<div class="section-header">📊 2. Executive Overview: {results.job_title}</div>', unsafe_allow_html=True)
+        # =====================================================================
+        # SECTION 2: EXECUTIVE KPI OVERVIEW (EXACTLY 4 CARDS)
+        # =====================================================================
+        st.markdown(f'<div class="section-title">📊 2. Executive Overview: {results.job_title}</div>', unsafe_allow_html=True)
 
         k1, k2, k3, k4 = st.columns(4, gap="medium")
         with k1:
             st.markdown(
-                f'<div class="kpi-card"><div class="kpi-value">{results.total_candidates}</div><div class="kpi-label">Candidates Evaluated</div></div>',
+                f'<div class="kpi-card"><div class="kpi-num">{results.total_candidates}</div><div class="kpi-txt">Candidates Evaluated</div></div>',
                 unsafe_allow_html=True,
             )
         with k2:
             top_candidate = results.ranked_candidates[0]
             top_display = top_candidate.candidate_name if show_names else top_candidate.anonymized_id
             st.markdown(
-                f'<div class="kpi-card"><div class="kpi-value">{top_candidate.overall_score:.1f}%</div><div class="kpi-label">Top Score ({top_display})</div></div>',
+                f'<div class="kpi-card"><div class="kpi-num">{top_candidate.overall_score:.1f}%</div><div class="kpi-txt">Top Score ({top_display})</div></div>',
                 unsafe_allow_html=True,
             )
         with k3:
             high_count = sum(1 for c in results.ranked_candidates if c.recommendation == "HIGH RELEVANCE")
             st.markdown(
-                f'<div class="kpi-card"><div class="kpi-value">{high_count}</div><div class="kpi-label">High Relevance Matches</div></div>',
+                f'<div class="kpi-card"><div class="kpi-num">{high_count}</div><div class="kpi-txt">High Relevance Matches</div></div>',
                 unsafe_allow_html=True,
             )
         with k4:
             avg_score = sum(c.overall_score for c in results.ranked_candidates) / len(results.ranked_candidates)
             st.markdown(
-                f'<div class="kpi-card"><div class="kpi-value">{avg_score:.1f}%</div><div class="kpi-label">Average Match Score</div></div>',
+                f'<div class="kpi-card"><div class="kpi-num">{avg_score:.1f}%</div><div class="kpi-txt">Average Match Score</div></div>',
                 unsafe_allow_html=True,
             )
 
-        # ==========================================
+        # =====================================================================
         # SECTION 3: CANDIDATE LEADERBOARD & RANKING
-        # ==========================================
-        st.markdown('<div class="section-header">🏆 3. Candidate Ranking & Leaderboard</div>', unsafe_allow_html=True)
+        # =====================================================================
+        st.markdown('<div class="section-title">🏆 3. Candidate Ranking & Leaderboard</div>', unsafe_allow_html=True)
 
-        filter_col1, filter_col2 = st.columns([2, 2], gap="large")
-        with filter_col1:
+        f_col1, f_col2 = st.columns([2, 2], gap="large")
+        with f_col1:
             rec_filters = st.multiselect(
                 "Filter by Recommendation Tier:",
                 options=["HIGH RELEVANCE", "RELEVANT", "MODERATE RELEVANCE", "LOW RELEVANCE"],
                 default=["HIGH RELEVANCE", "RELEVANT", "MODERATE RELEVANCE", "LOW RELEVANCE"],
             )
-        with filter_col2:
+        with f_col2:
             score_filter = st.slider("Minimum Match Score (%)", min_value=0.0, max_value=100.0, value=0.0, step=5.0)
 
-        filtered_list = [
+        filtered_candidates = [
             c for c in results.ranked_candidates
             if c.recommendation in rec_filters and c.overall_score >= score_filter
         ]
 
         leaderboard_rows = []
-        for c in filtered_list:
+        for c in filtered_candidates:
             c_name_str = c.candidate_name if show_names else c.anonymized_id
             leaderboard_rows.append({
                 "Rank": f"#{c.rank}",
@@ -483,19 +587,19 @@ def main():
         df_leaderboard = pd.DataFrame(leaderboard_rows)
         st.dataframe(df_leaderboard, use_container_width=True, hide_index=True)
 
-        # ==========================================
-        # SECTION 4: CANDIDATE PROFILE & EVIDENCE DEEP-DIVE
-        # ==========================================
-        st.markdown('<div class="section-header">🔍 4. Candidate Profile & Verified Evidence Deep-Dive</div>', unsafe_allow_html=True)
+        # =====================================================================
+        # SECTION 4: CANDIDATE PROFILE & VERIFIED EVIDENCE DEEP-DIVE
+        # =====================================================================
+        st.markdown('<div class="section-title">🔍 4. Candidate Profile & Verified Evidence Deep-Dive</div>', unsafe_allow_html=True)
 
-        candidate_labels = [
+        candidate_options = [
             f"Rank #{c.rank} - {c.candidate_name if show_names else c.anonymized_id} (Score: {c.overall_score:.1f}%)"
             for c in results.ranked_candidates
         ]
         chosen_idx = st.selectbox(
             "Select Candidate to Inspect:",
-            range(len(candidate_labels)),
-            format_func=lambda i: candidate_labels[i],
+            range(len(candidate_options)),
+            format_func=lambda i: candidate_options[i],
         )
         selected_cand = results.ranked_candidates[chosen_idx]
         selected_display_name = selected_cand.candidate_name if show_names else selected_cand.anonymized_id
@@ -504,7 +608,7 @@ def main():
 
         with detail_left:
             st.markdown(f"### 👤 {selected_display_name}")
-            st.caption(f"Candidate ID: `{selected_cand.anonymized_id}`")
+            st.caption(f"Candidate Identifier: `{selected_cand.anonymized_id}`")
 
             rec_badge_class = {
                 "HIGH RELEVANCE": "badge-high",
@@ -514,7 +618,7 @@ def main():
             }.get(selected_cand.recommendation, "badge-mod")
 
             st.markdown(
-                f'<div style="margin: 12px 0;"><span class="{rec_badge_class}">{selected_cand.recommendation}</span></div>',
+                f'<div style="margin: 14px 0;"><span class="{rec_badge_class}">{selected_cand.recommendation}</span></div>',
                 unsafe_allow_html=True,
             )
             st.progress(min(1.0, selected_cand.overall_score / 100.0), text=f"Overall Match: {selected_cand.overall_score:.1f}%")
@@ -576,10 +680,10 @@ def main():
                 for p in selected_cand.relevant_projects[:4]:
                     st.markdown(f"- **{p}**")
 
-        # ==========================================
+        # =====================================================================
         # SECTION 5: VISUAL ANALYTICS (ONLY 4 BARS & NAME REVEAL)
-        # ==========================================
-        st.markdown('<div class="section-header">📊 5. Visual Analytics & Candidate Benchmark</div>', unsafe_allow_html=True)
+        # =====================================================================
+        st.markdown('<div class="section-title">📊 5. Visual Analytics & Comparative Benchmark</div>', unsafe_allow_html=True)
 
         va_col1, va_col2 = st.columns([1.5, 1], gap="large")
 
@@ -588,7 +692,7 @@ def main():
             reveal_names_checkbox = st.checkbox(
                 "👁️ Reveal Candidate Real Names across Visual Analytics & Leaderboard",
                 value=st.session_state.show_names,
-                key="name_reveal_visual_analytics",
+                key="name_reveal_visual_analytics_clean",
                 help="Check to display real candidate names instead of anonymized IDs.",
             )
             if reveal_names_checkbox != st.session_state.show_names:
@@ -596,7 +700,7 @@ def main():
                 st.rerun()
 
         with va_col2:
-            st.caption("Displaying top candidate competencies and comparative visual analytics.")
+            st.caption("Benchmarking top candidates on overall match and 5-pillar competency metrics.")
 
         # ONLY 4 BARS AVAILABLE AS REQUESTED
         top_4_candidates = results.ranked_candidates[:4]
@@ -604,13 +708,13 @@ def main():
         bar_scores = [c.overall_score for c in top_4_candidates]
         bar_colors = ['#16A34A' if s >= 80 else '#2563EB' if s >= 65 else '#D97706' if s >= 50 else '#DC2626' for s in bar_scores]
 
-        st.markdown(f"#### 🏅 Top {len(top_4_candidates)} Ranked Candidates Match Comparison (4-Bar Benchmark)")
+        st.markdown(f"#### 🏅 Top {len(top_4_candidates)} Candidates Match Comparison (4-Bar Chart)")
 
         fig_4bars = go.Figure(
             data=[go.Bar(
                 x=bar_names,
                 y=bar_scores,
-                marker=dict(color=bar_colors, line=dict(color='#1E293B', width=1.5)),
+                marker=dict(color=bar_colors, line=dict(color='#0F172A', width=1.5)),
                 text=[f"{s:.1f}%" for s in bar_scores],
                 textposition='auto',
                 textfont=dict(size=16, color='#FFFFFF', family="Arial Black"),
@@ -623,7 +727,7 @@ def main():
             yaxis=dict(range=[0, 100], gridcolor='#E2E8F0'),
             xaxis=dict(gridcolor='#E2E8F0'),
             template="plotly_white",
-            height=420,
+            height=430,
             font=dict(size=14, color="#0F172A"),
             paper_bgcolor="#FFFFFF",
             plot_bgcolor="#FFFFFF",
@@ -657,17 +761,17 @@ def main():
             fig_pillars.update_layout(
                 yaxis=dict(range=[0, 100], gridcolor='#E2E8F0'),
                 xaxis=dict(gridcolor='#E2E8F0'),
-                height=420,
+                height=430,
                 font=dict(size=14, color="#0F172A"),
                 paper_bgcolor="#FFFFFF",
                 plot_bgcolor="#FFFFFF",
             )
             st.plotly_chart(fig_pillars, use_container_width=True)
 
-        # ==========================================
+        # =====================================================================
         # SECTION 6: FAIRNESS & EXPORT
-        # ==========================================
-        st.markdown('<div class="section-header">⚖️ 6. Fairness Audit & Leaderboard Export</div>', unsafe_allow_html=True)
+        # =====================================================================
+        st.markdown('<div class="section-title">⚖️ 6. Fairness Audit & Leaderboard Export</div>', unsafe_allow_html=True)
 
         audit_col1, audit_col2 = st.columns([1.5, 1], gap="large")
 

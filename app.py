@@ -521,11 +521,6 @@ def render_sidebar():
 
     # Quick Actions
     st.sidebar.markdown('<div style="font-size:0.75rem; font-weight:700; color:#94A3B8; text-transform:uppercase; margin-bottom:6px; letter-spacing:0.05em;">Actions</div>', unsafe_allow_html=True)
-    load_demo_clicked = st.sidebar.button(
-        "⚡ Load Demo Dataset",
-        use_container_width=True,
-        help="Optional: Loads sample Job Description & Candidates for testing",
-    )
 
     reset_clicked = st.sidebar.button(
         "🔄 Reset Session",
@@ -559,7 +554,7 @@ def render_sidebar():
         unsafe_allow_html=True,
     )
 
-    return current_section, load_demo_clicked, reset_clicked
+    return current_section, reset_clicked
 
 
 # =============================================================================
@@ -609,7 +604,7 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
     else:
         total_candidates = 0
         total_subtext = "No candidates processed"
-        avg_score_str = "—"
+        avg_score_str = "0%"
         avg_subtext = "Awaiting screening"
         skills_count = 0
         skills_subtext = "No skills extracted"
@@ -621,65 +616,56 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
 
     with k1:
         st.markdown(
-            f"""
-            <div class="kpi-card-reference">
-                <div>
-                    <div class="kpi-meta-title">Total Candidates</div>
-                    <div class="kpi-big-num">{total_candidates}</div>
-                    <div class="kpi-subtext">{total_subtext}</div>
-                </div>
-                <div class="kpi-icon-circle" style="background:#EEF2FF; color:#4F46E5;">👥</div>
-            </div>
-            """,
+            f"""<div class="kpi-card-reference">
+<div>
+<div class="kpi-meta-title">Total Candidates</div>
+<div class="kpi-big-num">{total_candidates}</div>
+<div class="kpi-subtext">{total_subtext}</div>
+</div>
+<div class="kpi-icon-circle" style="background:#EEF2FF; color:#4F46E5;">👥</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
     with k2:
-        badge_html = '<span style="font-size:0.75rem; background:#DCFCE7; color:#15803D; padding:2px 6px; border-radius:4px; font-weight:700;">Active</span>' if has_data else ''
+        badge_html = ' <span style="font-size:0.75rem; background:#DCFCE7; color:#15803D; padding:2px 6px; border-radius:4px; font-weight:700;">Active</span>' if has_data else ''
         st.markdown(
-            f"""
-            <div class="kpi-card-reference">
-                <div>
-                    <div class="kpi-meta-title">Average Match Score</div>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="kpi-big-num">{avg_score_str}</span>
-                        {badge_html}
-                    </div>
-                    <div class="kpi-subtext">{avg_subtext}</div>
-                </div>
-                <div class="kpi-icon-circle" style="background:#EFF6FF; color:#2563EB;">🎯</div>
-            </div>
-            """,
+            f"""<div class="kpi-card-reference">
+<div>
+<div class="kpi-meta-title">Average Match Score</div>
+<div style="display:flex; align-items:center; gap:8px;">
+<span class="kpi-big-num">{avg_score_str}</span>{badge_html}
+</div>
+<div class="kpi-subtext">{avg_subtext}</div>
+</div>
+<div class="kpi-icon-circle" style="background:#EFF6FF; color:#2563EB;">🎯</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
     with k3:
         st.markdown(
-            f"""
-            <div class="kpi-card-reference">
-                <div>
-                    <div class="kpi-meta-title">Skills Identified</div>
-                    <div class="kpi-big-num">{skills_count}</div>
-                    <div class="kpi-subtext">{skills_subtext}</div>
-                </div>
-                <div class="kpi-icon-circle" style="background:#ECFDF5; color:#059669;">🔬</div>
-            </div>
-            """,
+            f"""<div class="kpi-card-reference">
+<div>
+<div class="kpi-meta-title">Skills Identified</div>
+<div class="kpi-big-num">{skills_count}</div>
+<div class="kpi-subtext">{skills_subtext}</div>
+</div>
+<div class="kpi-icon-circle" style="background:#ECFDF5; color:#059669;">🔬</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
     with k4:
         st.markdown(
-            f"""
-            <div class="kpi-card-reference">
-                <div>
-                    <div class="kpi-meta-title">Review Required</div>
-                    <div class="kpi-big-num" style="color:{'#DC2626' if review_req > 0 else '#64748B'};">{review_req}</div>
-                    <div class="kpi-subtext">{review_subtext}</div>
-                </div>
-                <div class="kpi-icon-circle" style="background:#FEF2F2; color:#DC2626;">⚠️</div>
-            </div>
-            """,
+            f"""<div class="kpi-card-reference">
+<div>
+<div class="kpi-meta-title">Review Required</div>
+<div class="kpi-big-num" style="color:{'#DC2626' if review_req > 0 else '#64748B'};">{review_req}</div>
+<div class="kpi-subtext">{review_subtext}</div>
+</div>
+<div class="kpi-icon-circle" style="background:#FEF2F2; color:#DC2626;">⚠️</div>
+</div>""",
             unsafe_allow_html=True,
         )
 
@@ -700,23 +686,10 @@ def render_screen1_overview(results: BatchScreeningResult, show_names: bool):
             """,
             unsafe_allow_html=True,
         )
-        col_c1, col_c2, _ = st.columns([1.2, 1.2, 2])
+        col_c1, _ = st.columns([1.5, 2.5])
         with col_c1:
             if st.button("📥 Go to Resume Screening", type="primary", use_container_width=True, key="empty_screen_link"):
                 st.session_state.active_section = "Resume Screening"
-                st.rerun()
-        with col_c2:
-            if st.button("⚡ Load Demo Dataset (Optional)", use_container_width=True, key="empty_demo_load_btn"):
-                service = get_screening_service()
-                d_job, d_res, d_fnames, d_jname = load_demo_dataset()
-                batch_res = service.process_screening(
-                    job_input=d_job,
-                    resume_files=d_res,
-                    job_filename=d_jname,
-                    resume_filenames=d_fnames,
-                    job_title="Senior Machine Learning Engineer",
-                )
-                st.session_state.screening_results = batch_res
                 st.rerun()
         return
 
@@ -1632,7 +1605,7 @@ def main():
         st.session_state.active_section = "Overview Dashboard"
 
     service = get_screening_service()
-    selected_nav, load_demo, reset_btn = render_sidebar()
+    selected_nav, reset_btn = render_sidebar()
 
     # Reset
     if reset_btn:
@@ -1641,21 +1614,6 @@ def main():
         st.session_state.managed_resumes = []
         st.session_state.active_section = "Overview Dashboard"
         st.rerun()
-
-    # Load Demo (Optional, explicit only)
-    if load_demo:
-        demo_job, demo_resumes, demo_filenames, demo_job_name = load_demo_dataset()
-        with st.spinner("Processing demo candidates through AI pipeline..."):
-            results = service.process_screening(
-                job_input=demo_job,
-                resume_files=demo_resumes,
-                job_filename=demo_job_name,
-                resume_filenames=demo_filenames,
-                job_title="Senior Machine Learning Engineer",
-            )
-            st.session_state.screening_results = results
-            st.session_state.active_section = "Overview Dashboard"
-            st.rerun()
 
     results: BatchScreeningResult = st.session_state.screening_results
     show_names = st.session_state.show_names

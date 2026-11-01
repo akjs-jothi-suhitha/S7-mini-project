@@ -52,6 +52,22 @@ class JobParser:
             raw_text = PDFParser.extract_text(input_data)
         elif ext in ("docx", "doc"):
             raw_text = DocxParser.extract_text(input_data)
+        elif ext in ("txt", "md"):
+            if isinstance(input_data, (str, Path)) and Path(input_data).exists():
+                with open(str(input_data), "r", encoding="utf-8", errors="ignore") as f:
+                    raw_text = f.read()
+            elif hasattr(input_data, "read"):
+                content = input_data.read()
+                raw_text = content.decode("utf-8", errors="ignore") if isinstance(content, bytes) else str(content)
+                if hasattr(input_data, "seek"):
+                    input_data.seek(0)
+            elif isinstance(input_data, bytes):
+                raw_text = input_data.decode("utf-8", errors="ignore")
+            else:
+                raw_text = str(input_data)
+        elif isinstance(input_data, (str, Path)) and Path(input_data).exists():
+            with open(str(input_data), "r", encoding="utf-8", errors="ignore") as f:
+                raw_text = f.read()
         elif isinstance(input_data, str):
             raw_text = input_data
         elif isinstance(input_data, bytes):
